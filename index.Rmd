@@ -1,8 +1,17 @@
 ---
-title: "Untitled"
-author: "Justas Mundeikis"
-date: "3/14/2020"
-output: html_document
+title: "Coronavirus COVID-19 (2019-nCoV) statistics in Baltic states"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    fig_width: 16
+    fig_height: 9
+    fig_caption: true
+    theme: flatly
 editor_options: 
   chunk_output_type: console
 ---
@@ -31,12 +40,10 @@ if(!require("ggmap")) install.packages("ggmap")
 # duomenų importas
 # duomenų šaltinis: Rhttps://github.com/CSSEGISandData/COVID-19
 # 2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE
-data_confirmed <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv',
-                          stringsAsFactors = FALSE)
-data_deaths <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv',
-                       stringsAsFactors = FALSE)
-data_recovered <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv',
-                          stringsAsFactors = FALSE)
+
+data_confirmed <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv', stringsAsFactors = FALSE)
+data_deaths <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv', stringsAsFactors = FALSE)
+data_recovered <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv', stringsAsFactors = FALSE)
 
 ```
 
@@ -114,9 +121,7 @@ data <- data_confirmed%>%
 Lorre ipsum
 
 # Duomenys
-```{r}
-library(gsheet)
-library(dplyr)
+```{r, include=FALSE}
 # Duomenys apie Corona atvejus iš spaudos pranešimų
 corona_gs_sheet <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=0")
 
