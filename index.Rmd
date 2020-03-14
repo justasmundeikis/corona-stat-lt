@@ -3,10 +3,12 @@ title: "Untitled"
 author: "Justas Mundeikis"
 date: "3/14/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, error = TRUE, warning = FALSE, message = FALSE)
 ```
 
 ```{r, include=FALSE}
@@ -20,12 +22,15 @@ if(!require("RColorBrewer")) install.packages("RColorBrewer"); library("RColorBr
 if(!require("scales")) install.packages("scales"); library("scales")
 if(!require("rgdal")) install.packages("rgdal"); library("rgdal")
 if(!require("sf")) install.packages("sf"); library("sf")
+if(!require("gsheet")) install.packages("gsheet"); library("gsheet")
+if(!require("osmdata")) install.packages("osmdata")
+if(!require("ggmap")) install.packages("ggmap")
 ```
 
 ```{r, include=FALSE}
 # duomenų importas
 # duomenų šaltinis: Rhttps://github.com/CSSEGISandData/COVID-19
-# 2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE     
+# 2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE
 data_confirmed <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv',
                           stringsAsFactors = FALSE)
 data_deaths <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv',
@@ -36,40 +41,43 @@ data_recovered <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVI
 ```
 
 ```{r, include=FALSE}
-# TODO:
+# todo
 # šalies pakeitimai prieš summary, arba reikia daryti ant pavienių datasetų po importo,
 # arba pirma apjungti DS ir tada
 # reikia papildomo žingsnio verifikavimui (vidiniam) ar  šalys iš  Hopkinso ir žemėlapių atitinka, nes atsiradus naujoms šalims reikės rankutėmis koreguot... hopkins naudoja WHO šlaių pavadinimus, žemėlapiai ne...
 
-data$country[data$country=="Congo (Kinshasa)"] <- "Democratic Republic of the Congo"
-data$country[data$country=="Cote d'Ivoire"] <- "Ivory Coast"
-data$country[data$country=="French Guiana"] <- "France"
-data$country[data$country=="Martinique"] <- "France"
-data$country[data$country=="Reunion"] <- "France"
-data$country[data$country=="Holy See"] <- "Vatican"
-data$country[data$country=="Korea, South"] <- "South Korea"
-data$country[data$country=="North Macedonia"] <- "Macedonia"
-data$country[data$country=="Serbia"] <- "Republic of Serbia"
-data$country[data$country=="US"] <- "United States of America"
+
+# data$country[data$country=="Congo (Kinshasa)"] <- "Democratic Republic of the Congo"
+# data$country[data$country=="Cote d'Ivoire"] <- "Ivory Coast"
+# data$country[data$country=="French Guiana"] <- "France"
+# data$country[data$country=="Martinique"] <- "France"
+# data$country[data$country=="Reunion"] <- "France"
+# data$country[data$country=="Holy See"] <- "Vatican"
+# data$country[data$country=="Korea, South"] <- "South Korea"
+# data$country[data$country=="North Macedonia"] <- "Macedonia"
+# data$country[data$country=="Serbia"] <- "Republic of Serbia"
+# data$country[data$country=="US"] <- "United States of America"
 
 
 ```
 
 ```{r, include=FALSE}
-# TODO:
+# todo
 # reikia importą zipo ir failo paėmimą iš zipo padaryt, nes dabar iš working directory ima
 
 # INFO:
 # https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-countries-2
 
-
-countries <- readOGR(dsn ="./ne_50m_admin_0_sovereignty.shp", 
-                             encoding = "utf-8",
-                             use_iconv = T,
-                             verbose = FALSE,
-                     stringsAsFactors = FALSE)
-
-countries <- st_as_sf(countries)
+# URL <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/cultural/ne_50m_admin_0_sovereignty.zip"
+# download.file(url=URL, destfile ="ne_50m_admin_0_sovereignty.zip", method = "auto")
+# unzip("ne_50m_admin_0_sovereignty.zip", exdir = "./")
+#countries <- readOGR(dsn="ne_50m_admin_0_sovereignty.shp",
+#                             encoding = "utf-8",
+#                             use_iconv = T,
+#                             verbose = FALSE,
+#                     stringsAsFactors = FALSE)
+# countries <- st_as_sf(countries)
+# ggplot(countries)+ geom_sf()
 
 
 ```
@@ -84,14 +92,26 @@ cleaning_data <- function(data) {
         data %<>% group_by(country, date) %>% summarise(count=sum(count)) %>% as.data.frame()
 }
 
+```
+
+
+
+```{r, include=FALSE}
+
+data_confirmed %<>% cleaning_data() %>% rename(confirmed=count)
+data_deaths %<>% cleaning_data() %>% rename(deaths=count)
+data_recovered %<>% cleaning_data( )%>% rename(recovered=count)
+
+data <- data_confirmed%>% 
+        merge(data_deaths)%>% 
+        merge(data_recovered)%>%
+        mutate(confirmed_rest=confirmed-deaths-recovered) %>%
+        gather(key=var, value=value, -c(country, date)) %>%
+        mutate(var=factor(var, levels=c("confirmed", "confirmed_rest", "recovered", "deaths")))
 
 ```
 # Įvadas
 Lorre ipsum
-
-```{r}
-2+2
-```
 
 # Duomenys
 ```{r}
@@ -106,15 +126,45 @@ corona_gs_sheet %>% group_by(date, var, county_2) %>% summarize(value = sum(Valu
 
 ```
 
-# Rezultatai
-Lorre ipsum
-
 # Pasaulinė statistika
-Lorre ipsum
+
+## Bendra statistika
+```{r, echo=FALSE}
+data_world<- data %>%
+        group_by(date, var)%>%
+        summarise(value=sum(value))%>%
+        filter(var!="confirmed")
+
+max.date <- max(data$date)
+
+ggplot(data_world, aes(x=date, y=value, fill=var))+
+        geom_area(alpha=0.5)+
+        scale_fill_manual(values=c("red", "green", "black"))+ 
+        scale_x_date(breaks="1 week")+
+        scale_y_continuous(breaks =pretty_breaks())+
+        labs(title=paste0("COVID-19 (last update ", max.date,")"),
+             subtitle = "Source: 2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE",
+             x="Date",
+             y="Count")+
+        theme(legend.title=element_blank(),
+              legend.position='bottom',
+              axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+## Top 10 šalių
+
+## Žemėlapis
+
 
 # Europos statistika
-Lorre ipsum
+## Bendra statistika
+## Žemėlapis
 
 # Lietuvos statistika
-Lorre ipsum
+## Bendra statistika
 
+## Žemėlapis
+
+## Prognozės
+Kas turite kokių pasiūlymų, kaip prognozuoti užsikrėtimų, mirčių statistika?
