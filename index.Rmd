@@ -96,6 +96,7 @@ Lorre ipsum
 # Duomenys
 ```{r}
 library(gsheet)
+library(dplyr)
 # Duomenys apie Corona atvejus iš spaudos pranešimų
 corona_gs_sheet <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=0")
 
