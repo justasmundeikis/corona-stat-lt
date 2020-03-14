@@ -1,0 +1,47 @@
+---
+title: "Untitled"
+author: "Justas Mundeikis"
+date: "3/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+# paketai kurie reikalingi kodo veikimui
+if(!require("magrittr")) install.packages("magrittr"); library("magrittr")
+if(!require("lubridate")) install.packages("lubridate"); library("lubridate")
+if(!require("tidyverse")) install.packages("tidyverse"); library("tidyverse")
+if(!require("gridExtra")) install.packages("gridExtra"); library("gridExtra")
+if(!require("kableExtra")) install.packages("kableExtra"); library("kableExtra")
+if(!require("RColorBrewer")) install.packages("RColorBrewer"); library("RColorBrewer")
+if(!require("scales")) install.packages("scales"); library("scales")
+if(!require("rgdal")) install.packages("rgdal"); library("rgdal")
+if(!require("sf")) install.packages("sf"); library("sf")
+```
+
+
+# Įvadas
+Lorre ipsum
+
+```{r}
+2+2
+```
+
+# Duomenys
+Lorre ipsum
+
+# Rezultatai
+Lorre ipsum
+
+# Pasaulinė statistika
+Lorre ipsum
+
+# Europos statistika
+Lorre ipsum
+
+# Lietuvos statistika
+Lorre ipsum
+
