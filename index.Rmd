@@ -123,11 +123,11 @@ Lorre ipsum
 # Duomenys
 ```{r, include=FALSE}
 # Duomenys apie Corona atvejus iš spaudos pranešimų
-corona_gs_sheet <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=0")
+# corona_gs_sheet <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=0")
 
 # Agreguojame atvejus vienos dienos lygmeniu
-corona_gs_sheet %>% group_by(date, var) %>% summarize(value = sum(Value))
-corona_gs_sheet %>% group_by(date, var, county_2) %>% summarize(value = sum(Value))
+# corona_gs_sheet %>% group_by(date, var) %>% summarize(value = sum(Value))
+# corona_gs_sheet %>% group_by(date, var, county_2) %>% summarize(value = sum(Value))
 
 ```
 
@@ -162,14 +162,32 @@ ggplot(data_world, aes(x=date, y=value, fill=var))+
 ## Žemėlapis
 
 
-# Europos statistika
-## Bendra statistika
-## Žemėlapis
+# Europos statistika {.tabset .tabset-fade .tabset-pills}
+
+## Country A
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Country B
+
+You can also embed plots, for example:
+
+```{r , echo=FALSE}
+plot(pressure, type="l")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
 
 # Lietuvos statistika
 ## Bendra statistika
-
 ## Žemėlapis
 
-## Prognozės
+# Prognozės
 Kas turite kokių pasiūlymų, kaip prognozuoti užsikrėtimų, mirčių statistika?
