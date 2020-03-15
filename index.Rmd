@@ -21,51 +21,13 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, error = TRUE, warning = FALS
 ```
 
 ```{r, include=FALSE}
-# paketai kurie reikalingi kodo veikimui
-if(!require("magrittr")) install.packages("magrittr"); library("magrittr")
-if(!require("lubridate")) install.packages("lubridate"); library("lubridate")
-if(!require("tidyverse")) install.packages("tidyverse"); library("tidyverse")
-if(!require("gridExtra")) install.packages("gridExtra"); library("gridExtra")
-if(!require("kableExtra")) install.packages("kableExtra"); library("kableExtra")
-if(!require("RColorBrewer")) install.packages("RColorBrewer"); library("RColorBrewer")
-if(!require("scales")) install.packages("scales"); library("scales")
-if(!require("rgdal")) install.packages("rgdal"); library("rgdal")
-if(!require("sf")) install.packages("sf"); library("sf")
-if(!require("gsheet")) install.packages("gsheet"); library("gsheet")
-if(!require("osmdata")) install.packages("osmdata")
-if(!require("ggmap")) install.packages("ggmap")
+# loading packets that are needed for running the .Rmd 
+source("./scripts/loading_R_packets.R")
 ```
 
 ```{r, include=FALSE}
-# duomenų importas
-# duomenų šaltinis: Rhttps://github.com/CSSEGISandData/COVID-19
-# 2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE
-
-data_confirmed <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv', stringsAsFactors = FALSE)
-data_deaths <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv', stringsAsFactors = FALSE)
-data_recovered <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv', stringsAsFactors = FALSE)
-
-```
-
-```{r, include=FALSE}
-# todo
-# šalies pakeitimai prieš summary, arba reikia daryti ant pavienių datasetų po importo,
-# arba pirma apjungti DS ir tada
-# reikia papildomo žingsnio verifikavimui (vidiniam) ar  šalys iš  Hopkinso ir žemėlapių atitinka, nes atsiradus naujoms šalims reikės rankutėmis koreguot... hopkins naudoja WHO šlaių pavadinimus, žemėlapiai ne...
-
-
-# data$country[data$country=="Congo (Kinshasa)"] <- "Democratic Republic of the Congo"
-# data$country[data$country=="Cote d'Ivoire"] <- "Ivory Coast"
-# data$country[data$country=="French Guiana"] <- "France"
-# data$country[data$country=="Martinique"] <- "France"
-# data$country[data$country=="Reunion"] <- "France"
-# data$country[data$country=="Holy See"] <- "Vatican"
-# data$country[data$country=="Korea, South"] <- "South Korea"
-# data$country[data$country=="North Macedonia"] <- "Macedonia"
-# data$country[data$country=="Serbia"] <- "Republic of Serbia"
-# data$country[data$country=="US"] <- "United States of America"
-
-
+# importing JHCSSE and LT data, data preparation
+source("./scripts/data_import_preparation.R")
 ```
 
 ```{r, include=FALSE}
@@ -86,61 +48,29 @@ data_recovered <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVI
 # countries <- st_as_sf(countries)
 # ggplot(countries)+ geom_sf()
 
-
-```
-
-```{r, include=FALSE}
-
-
-cleaning_data <- function(data) {
-        data %<>% select(-c(Province.State, Lat, Long)) %>% rename(country=Country.Region)
-        data %<>% gather(key=date, value=count, -country)
-        data %<>% mutate(date=date %>%substr(2,8) %>% mdy())
-        data %<>% group_by(country, date) %>% summarise(count=sum(count)) %>% as.data.frame()
-}
-
 ```
 
 
 
-```{r, include=FALSE}
-
-data_confirmed %<>% cleaning_data() %>% rename(confirmed=count)
-data_deaths %<>% cleaning_data() %>% rename(deaths=count)
-data_recovered %<>% cleaning_data( )%>% rename(recovered=count)
-
-data <- data_confirmed%>% 
-        merge(data_deaths)%>% 
-        merge(data_recovered)%>%
-        mutate(confirmed_rest=confirmed-deaths-recovered) %>%
-        gather(key=var, value=value, -c(country, date)) %>%
-        mutate(var=factor(var, levels=c("confirmed", "confirmed_rest", "recovered", "deaths")))
-
-```
 # Įvadas
-Lorre ipsum
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauris id commodo rutrum. Ut ultrices, nisl non maximus pulvinar, risus risus vehicula nulla, ullamcorper lacinia orci ligula ac neque. Suspendisse lacinia, erat vitae tincidunt euismod, arcu justo viverra enim, vel maximus orci ipsum eu libero. Phasellus bibendum ullamcorper ligula. Nunc mauris nulla, dictum porttitor vehicula sed, tincidunt non dolor. Etiam a porta mi, non scelerisque enim. Etiam vel massa tempus, blandit erat eget, pulvinar augue. Cras facilisis justo vel urna egestas consequat. Donec rhoncus tincidunt malesuada. Fusce sit amet volutpat quam. Integer faucibus, turpis id efficitur tempor, ante lorem commodo tortor, et eleifend metus odio iaculis orci. Duis nisl nulla, semper et arcu et, rutrum interdum ipsum. 
 
 # Duomenys
-```{r, include=FALSE}
-# Duomenys apie Corona atvejus iš spaudos pranešimų
-# corona_gs_sheet <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=0")
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauris id commodo rutrum. Ut ultrices, nisl non maximus pulvinar, risus risus vehicula nulla, ullamcorper lacinia orci ligula ac neque. Suspendisse lacinia, erat vitae tincidunt euismod, arcu justo viverra enim, vel maximus orci ipsum eu libero. Phasellus bibendum ullamcorper ligula. Nunc mauris nulla, dictum porttitor vehicula sed, tincidunt non dolor. Etiam a porta mi, non scelerisque enim. Etiam vel massa tempus, blandit erat eget, pulvinar augue. Cras facilisis justo vel urna egestas consequat. Donec rhoncus tincidunt malesuada. Fusce sit amet volutpat quam. Integer faucibus, turpis id efficitur tempor, ante lorem commodo tortor, et eleifend metus odio iaculis orci. Duis nisl nulla, semper et arcu et, rutrum interdum ipsum. 
 
-# Agreguojame atvejus vienos dienos lygmeniu
-# corona_gs_sheet %>% group_by(date, var) %>% summarize(value = sum(Value))
-# corona_gs_sheet %>% group_by(date, var, county_2) %>% summarize(value = sum(Value))
+# Pasaulinė statistika {.tabset .tabset-fade .tabset-pills}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauris id commodo rutrum. Ut ultrices, nisl non maximus pulvinar, risus risus vehicula nulla, ullamcorper lacinia orci ligula ac neque. Suspendisse lacinia, erat vitae tincidunt euismod, arcu justo viverra enim, vel maximus orci ipsum eu libero. Phasellus bibendum ullamcorper ligula. Nunc mauris nulla, dictum porttitor vehicula sed, tincidunt non dolor. Etiam a porta mi, non scelerisque enim. Etiam vel massa tempus, blandit erat eget, pulvinar augue. Cras facilisis justo vel urna egestas consequat. Donec rhoncus tincidunt malesuada. Fusce sit amet volutpat quam. Integer faucibus, turpis id efficitur tempor, ante lorem commodo tortor, et eleifend metus odio iaculis orci. Duis nisl nulla, semper et arcu et, rutrum interdum ipsum. 
 
-```
-
-# Pasaulinė statistika
-
-## Bendra statistika
-```{r, echo=FALSE}
+## Žemėlapis{.tabset .tabset-fade .tabset-pills}
+### Žemėlapis 1
+```{r pressure, echo=FALSE}
 data_world<- data %>%
         group_by(date, var)%>%
         summarise(value=sum(value))%>%
         filter(var!="confirmed")
 
 max.date <- max(data$date)
+
 
 ggplot(data_world, aes(x=date, y=value, fill=var))+
         geom_area(alpha=0.5)+
@@ -156,15 +86,27 @@ ggplot(data_world, aes(x=date, y=value, fill=var))+
               axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+### Žemėlapis 2
+### Žemėlapis 3
+### Žemėlapis 4
+
+
+
+
 
 ## Top 10 šalių
 
-## Žemėlapis
 
 
 # Europos statistika {.tabset .tabset-fade .tabset-pills}
 
-## Country A
+## Žemėlapis {.tabset .tabset-fade .tabset-pills}
+### Žemėlapis 1
+### Žemėlapis 2
+### Žemėlapis 3
+### Žemėlapis 4
+
+## Sataitiska A
 
 You can also embed plots, for example:
 
@@ -172,9 +114,7 @@ You can also embed plots, for example:
 plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-## Country B
+## Sataitiska A
 
 You can also embed plots, for example:
 
@@ -182,12 +122,22 @@ You can also embed plots, for example:
 plot(pressure, type="l")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
-
-# Lietuvos statistika
+# Lietuva {.tabset .tabset-fade .tabset-pills}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauris id commodo rutrum. Ut ultrices, nisl non maximus pulvinar, risus risus vehicula nulla, ullamcorper lacinia orci ligula ac neque. Suspendisse lacinia, erat vitae tincidunt euismod, arcu justo viverra enim, vel maximus orci ipsum eu libero. Phasellus bibendum ullamcorper ligula. Nunc mauris nulla, dictum porttitor vehicula sed, tincidunt non dolor. Etiam a porta mi, non scelerisque enim. Etiam vel massa tempus, blandit erat eget, pulvinar augue. Cras facilisis justo vel urna egestas consequat. Donec rhoncus tincidunt malesuada. Fusce sit amet volutpat quam. Integer faucibus, turpis id efficitur tempor, ante lorem commodo tortor, et eleifend metus odio iaculis orci. Duis nisl nulla, semper et arcu et, rutrum interdum ipsum. 
 ## Bendra statistika
 ## Žemėlapis
 
+
+# Ekonomika {.tabset .tabset-fade .tabset-pills}
+## BVP
+## BVP (Q)
+## Pramonės produkcija (M)
+## Užsienio prekyba
+## Mažmeninė preyba
+## Infliacija (M)
+## Kreditai (M)
+## Užimtumas / nedarbas (M)
+
 # Prognozės
-Kas turite kokių pasiūlymų, kaip prognozuoti užsikrėtimų, mirčių statistika?
+
