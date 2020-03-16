@@ -1,201 +1,201 @@
-"","countries.SOVEREIGNT","countries.SOV_A3"
-"1","Zimbabwe","ZWE"
-"2","Zambia","ZMB"
-"3","Yemen","YEM"
-"4","Vietnam","VNM"
-"5","Venezuela","VEN"
-"6","Vatican","VAT"
-"7","Vanuatu","VUT"
-"8","Uzbekistan","UZB"
-"9","Uruguay","URY"
-"10","Federated States of Micronesia","FSM"
-"11","Marshall Islands","MHL"
-"12","United States of America","US1"
-"13","United Kingdom","GB1"
-"14","United Arab Emirates","ARE"
-"15","Ukraine","UKR"
-"16","Uganda","UGA"
-"17","Turkmenistan","TKM"
-"18","Turkey","TUR"
-"19","Tunisia","TUN"
-"20","Trinidad and Tobago","TTO"
-"21","Tonga","TON"
-"22","Togo","TGO"
-"23","East Timor","TLS"
-"24","Thailand","THA"
-"25","United Republic of Tanzania","TZA"
-"26","Tajikistan","TJK"
-"27","Taiwan","TWN"
-"28","Syria","SYR"
-"29","Switzerland","CHE"
-"30","Sweden","SWE"
-"31","eSwatini","SWZ"
-"32","Suriname","SUR"
-"33","South Sudan","SDS"
-"34","Sudan","SDN"
-"35","Sri Lanka","LKA"
-"36","Spain","ESP"
-"37","South Korea","KOR"
-"38","South Africa","ZAF"
-"39","Somalia","SOM"
-"40","Somaliland","SOL"
-"41","Solomon Islands","SLB"
-"42","Slovakia","SVK"
-"43","Slovenia","SVN"
-"44","Singapore","SGP"
-"45","Sierra Leone","SLE"
-"46","Seychelles","SYC"
-"47","Republic of Serbia","SRB"
-"48","Senegal","SEN"
-"49","Saudi Arabia","SAU"
-"50","São Tomé and Principe","STP"
-"51","San Marino","SMR"
-"52","Samoa","WSM"
-"53","Saint Vincent and the Grenadines","VCT"
-"54","Saint Lucia","LCA"
-"55","Saint Kitts and Nevis","KNA"
-"56","Rwanda","RWA"
-"57","Russia","RUS"
-"58","Romania","ROU"
-"59","Qatar","QAT"
-"60","Portugal","PRT"
-"61","Poland","POL"
-"62","Philippines","PHL"
-"63","Peru","PER"
-"64","Paraguay","PRY"
-"65","Papua New Guinea","PNG"
-"66","Panama","PAN"
-"67","Palau","PLW"
-"68","Pakistan","PAK"
-"69","Oman","OMN"
-"70","Norway","NOR"
-"71","North Korea","PRK"
-"72","Nigeria","NGA"
-"73","Niger","NER"
-"74","Nicaragua","NIC"
-"75","New Zealand","NZ1"
-"76","Netherlands","NL1"
-"77","Nepal","NPL"
-"78","Nauru","NRU"
-"79","Namibia","NAM"
-"80","Mozambique","MOZ"
-"81","Morocco","MAR"
-"82","Western Sahara","SAH"
-"83","Montenegro","MNE"
-"84","Mongolia","MNG"
-"85","Moldova","MDA"
-"86","Monaco","MCO"
-"87","Mexico","MEX"
-"88","Mauritius","MUS"
-"89","Mauritania","MRT"
-"90","Malta","MLT"
-"91","Mali","MLI"
-"92","Maldives","MDV"
-"93","Malaysia","MYS"
-"94","Malawi","MWI"
-"95","Madagascar","MDG"
-"96","Macedonia","MKD"
-"97","Luxembourg","LUX"
-"98","Lithuania","LTU"
-"99","Liechtenstein","LIE"
-"100","Libya","LBY"
-"101","Liberia","LBR"
-"102","Lesotho","LSO"
-"103","Lebanon","LBN"
-"104","Latvia","LVA"
-"105","Laos","LAO"
-"106","Kyrgyzstan","KGZ"
-"107","Kuwait","KWT"
-"108","Kosovo","KOS"
-"109","Kiribati","KIR"
-"110","Kenya","KEN"
-"111","Kazakhstan","KAZ"
-"112","Jordan","JOR"
-"113","Japan","JPN"
-"114","Jamaica","JAM"
-"115","Italy","ITA"
-"116","Israel","IS1"
-"117","Ireland","IRL"
-"118","Iraq","IRQ"
-"119","Iran","IRN"
-"120","Indonesia","IDN"
-"121","India","IND"
-"122","Iceland","ISL"
-"123","Hungary","HUN"
-"124","Honduras","HND"
-"125","Haiti","HTI"
-"126","Guyana","GUY"
-"127","Guinea-Bissau","GNB"
-"128","Guinea","GIN"
-"129","Guatemala","GTM"
-"130","Grenada","GRD"
-"131","Greece","GRC"
-"132","Ghana","GHA"
-"133","Germany","DEU"
-"134","Georgia","GEO"
-"135","Gambia","GMB"
-"136","Gabon","GAB"
-"137","France","FR1"
-"138","Finland","FI1"
-"139","Fiji","FJI"
-"140","Ethiopia","ETH"
-"141","Estonia","EST"
-"142","Eritrea","ERI"
-"143","Equatorial Guinea","GNQ"
-"144","El Salvador","SLV"
-"145","Egypt","EGY"
-"146","Ecuador","ECU"
-"147","Dominican Republic","DOM"
-"148","Dominica","DMA"
-"149","Djibouti","DJI"
-"150","Denmark","DN1"
-"151","Czechia","CZE"
-"152","Northern Cyprus","CYN"
-"153","Cyprus","CYP"
-"154","Cuba","CUB"
-"155","Croatia","HRV"
-"156","Ivory Coast","CIV"
-"157","Costa Rica","CRI"
-"158","Democratic Republic of the Congo","COD"
-"159","Republic of the Congo","COG"
-"160","Comoros","COM"
-"161","Colombia","COL"
-"162","China","CH1"
-"163","Chile","CHL"
-"164","Chad","TCD"
-"165","Central African Republic","CAF"
-"166","Cabo Verde","CPV"
-"167","Canada","CAN"
-"168","Cameroon","CMR"
-"169","Cambodia","KHM"
-"170","Myanmar","MMR"
-"171","Burundi","BDI"
-"172","Burkina Faso","BFA"
-"173","Bulgaria","BGR"
-"174","Brunei","BRN"
-"175","Brazil","BRA"
-"176","Botswana","BWA"
-"177","Bosnia and Herzegovina","BIH"
-"178","Bolivia","BOL"
-"179","Bhutan","BTN"
-"180","Benin","BEN"
-"181","Belize","BLZ"
-"182","Belgium","BEL"
-"183","Belarus","BLR"
-"184","Barbados","BRB"
-"185","Bangladesh","BGD"
-"186","Bahrain","BHR"
-"187","The Bahamas","BHS"
-"188","Azerbaijan","AZE"
-"189","Austria","AUT"
-"190","Australia","AU1"
-"191","Armenia","ARM"
-"192","Argentina","ARG"
-"193","Antigua and Barbuda","ATG"
-"194","Angola","AGO"
-"195","Andorra","AND"
-"196","Algeria","DZA"
-"197","Albania","ALB"
-"198","Afghanistan","AFG"
-"199","Kashmir","KAS"
-"200","Antarctica","ATA"
+SHAPE_C,SHAPE_CC
+Afghanistan,AFG
+Albania,ALB
+Algeria,DZA
+Andorra,AND
+Angola,AGO
+Antarctica,ATA
+Antigua and Barbuda,ATG
+Argentina,ARG
+Armenia,ARM
+Australia,AU1
+Austria,AUT
+Azerbaijan,AZE
+Bahrain,BHR
+Bangladesh,BGD
+Barbados,BRB
+Belarus,BLR
+Belgium,BEL
+Belize,BLZ
+Benin,BEN
+Bhutan,BTN
+Bolivia,BOL
+Bosnia and Herzegovina,BIH
+Botswana,BWA
+Brazil,BRA
+Brunei,BRN
+Bulgaria,BGR
+Burkina Faso,BFA
+Burundi,BDI
+Cabo Verde,CPV
+Cambodia,KHM
+Cameroon,CMR
+Canada,CAN
+Central African Republic,CAF
+Chad,TCD
+Chile,CHL
+China,CH1
+Colombia,COL
+Comoros,COM
+Costa Rica,CRI
+Croatia,HRV
+Cuba,CUB
+Cyprus,CYP
+Czechia,CZE
+Democratic Republic of the Congo,COD
+Denmark,DN1
+Djibouti,DJI
+Dominica,DMA
+Dominican Republic,DOM
+East Timor,TLS
+Ecuador,ECU
+Egypt,EGY
+El Salvador,SLV
+Equatorial Guinea,GNQ
+Eritrea,ERI
+Estonia,EST
+Eswatini,SWZ
+Ethiopia,ETH
+Federated States of Micronesia,FSM
+Fiji,FJI
+Finland,FI1
+France,FR1
+Gabon,GAB
+Gambia,GMB
+Georgia,GEO
+Germany,DEU
+Ghana,GHA
+Greece,GRC
+Grenada,GRD
+Guatemala,GTM
+Guinea,GIN
+Guinea-Bissau,GNB
+Guyana,GUY
+Haiti,HTI
+Honduras,HND
+Hungary,HUN
+Iceland,ISL
+India,IND
+Indonesia,IDN
+Iran,IRN
+Iraq,IRQ
+Ireland,IRL
+Israel,IS1
+Italy,ITA
+Ivory Coast,CIV
+Jamaica,JAM
+Japan,JPN
+Jordan,JOR
+Kashmir,KAS
+Kazakhstan,KAZ
+Kenya,KEN
+Kiribati,KIR
+Kosovo,KOS
+Kuwait,KWT
+Kyrgyzstan,KGZ
+Laos,LAO
+Latvia,LVA
+Lebanon,LBN
+Lesotho,LSO
+Liberia,LBR
+Libya,LBY
+Liechtenstein,LIE
+Lithuania,LTU
+Luxembourg,LUX
+Macedonia,MKD
+Madagascar,MDG
+Malawi,MWI
+Malaysia,MYS
+Maldives,MDV
+Mali,MLI
+Malta,MLT
+Marshall Islands,MHL
+Mauritania,MRT
+Mauritius,MUS
+Mexico,MEX
+Moldova,MDA
+Monaco,MCO
+Mongolia,MNG
+Montenegro,MNE
+Morocco,MAR
+Mozambique,MOZ
+Myanmar,MMR
+Namibia,NAM
+Nauru,NRU
+Nepal,NPL
+Netherlands,NL1
+New Zealand,NZ1
+Nicaragua,NIC
+Niger,NER
+Nigeria,NGA
+North Korea,PRK
+Northern Cyprus,CYN
+Norway,NOR
+Oman,OMN
+Pakistan,PAK
+Palau,PLW
+Panama,PAN
+Papua New Guinea,PNG
+Paraguay,PRY
+Peru,PER
+Philippines,PHL
+Poland,POL
+Portugal,PRT
+Qatar,QAT
+Republic of Serbia,SRB
+Republic of the Congo,COG
+Romania,ROU
+Russia,RUS
+Rwanda,RWA
+Saint Kitts and Nevis,KNA
+Saint Lucia,LCA
+Saint Vincent and the Grenadines,VCT
+Samoa,WSM
+San Marino,SMR
+São Tomé and Principe,STP
+Saudi Arabia,SAU
+Senegal,SEN
+Seychelles,SYC
+Sierra Leone,SLE
+Singapore,SGP
+Slovakia,SVK
+Slovenia,SVN
+Solomon Islands,SLB
+Somalia,SOM
+Somaliland,SOL
+South Africa,ZAF
+South Korea,KOR
+South Sudan,SDS
+Spain,ESP
+Sri Lanka,LKA
+Sudan,SDN
+Suriname,SUR
+Sweden,SWE
+Switzerland,CHE
+Syria,SYR
+Taiwan,TWN
+Tajikistan,TJK
+Thailand,THA
+The Bahamas,BHS
+Togo,TGO
+Tonga,TON
+Trinidad and Tobago,TTO
+Tunisia,TUN
+Turkey,TUR
+Turkmenistan,TKM
+Uganda,UGA
+Ukraine,UKR
+United Arab Emirates,ARE
+United Kingdom,GB1
+United Republic of Tanzania,TZA
+United States of America,US1
+Uruguay,URY
+Uzbekistan,UZB
+Vanuatu,VUT
+Vatican,VAT
+Venezuela,VEN
+Vietnam,VNM
+Western Sahara,SAH
+Yemen,YEM
+Zambia,ZMB
+Zimbabwe,ZWE

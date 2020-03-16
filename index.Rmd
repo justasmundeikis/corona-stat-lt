@@ -22,12 +22,12 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, error = TRUE, warning = FALS
 
 ```{r, include=FALSE}
 # loading packets that are needed for running the .Rmd 
-source("./scripts/loading_R_packets.R")
+readLines("./scripts/loading_R_packets.R")
 ```
 
 ```{r, include=FALSE}
 # importing JHCSSE and LT data, data preparation
-source("./scripts/data_import_preparation.R")
+readLines("./scripts/data_import_preparation.R")
 ```
 
 ```{r, include=FALSE}
