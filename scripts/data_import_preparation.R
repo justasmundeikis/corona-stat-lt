@@ -31,6 +31,13 @@ data <- data_confirmed %>%
 # arba pirma apjungti DS ir tada
 # reikia papildomo žingsnio verifikavimui (vidiniam) ar  šalys iš  Hopkinso ir žemėlapių atitinka, nes atsiradus naujoms šalims reikės rankutėmis koreguot... hopkins naudoja WHO šlaių pavadinimus, žemėlapiai ne...
 
+library(countrycode)
+help("countrycode")
+
+data$countryiso <- countrycode(data$country, origin = "country.name", destination =  "iso3c")
+data$valstybe <- countrycode(data$country, origin = "country.name", destination =  "cldr.short.lt")
+
+?codelist
 
 # data$country[data$country=="Congo (Kinshasa)"] <- "Democratic Republic of the Congo"
 # data$country[data$country=="Cote d'Ivoire"] <- "Ivory Coast"
@@ -47,7 +54,14 @@ data <- data_confirmed %>%
 
 
 # Duomenys apie Corona atvejus iš spaudos pranešimų
-# corona_gs_sheet <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=0")
+library(gsheet)
+corona_gs_sheet <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=0")
+library(tidyverse)
+data_lt <- corona_gs_sheet %>% select(1:11)
+
+
+
+
 
 # Agreguojame atvejus vienos dienos lygmeniu
 # corona_gs_sheet %>% group_by(date, var) %>% summarize(value = sum(Value))
