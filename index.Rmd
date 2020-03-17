@@ -122,7 +122,7 @@ df <- left_join(shape, df, by="CNTR_CODE")
 
 ggplot(df, aes(fill=value))+
   geom_sf()+
- scale_fill_gradient(low = "yellow", high = "red")+
+ scale_fill_gradientn(colours=rev(brewer.pal(10,"Spectral")))+
    labs(title=paste0("Suminis korona virusu apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
              subtitle = "Šaltinis: corona-stat.lt")+
   xlim(c(-23,29))+
@@ -149,7 +149,7 @@ df <- left_join(shape, df, by="NUTS_ID")
 
 ggplot(df, aes(fill=values))+
   geom_sf()+
- scale_fill_gradient(low = "yellow", high = "red")+
+ scale_fill_gradientn(colours=rev(brewer.pal(10,"Spectral")))+
    labs(title=paste0("Suminis korona virusu apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
              subtitle = "Šaltinis: corona-stat.lt")
 ```
