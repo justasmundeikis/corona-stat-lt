@@ -124,7 +124,7 @@ ggplot(df, aes(fill=value))+
   geom_sf()+
  scale_fill_gradientn(colours=rev(brewer.pal(10,"Spectral")))+
    labs(title=paste0("Suminis korona virusu apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
-             subtitle = "Šaltinis: corona-stat.lt")+
+             subtitle = "Šaltinis:JHCSSE Skaičiavimai: corona-stat.lt")+
   xlim(c(-23,29))+
   ylim(c(35,70))
 ```
