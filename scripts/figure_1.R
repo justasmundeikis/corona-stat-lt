@@ -8,7 +8,7 @@ data_world <- read.csv("./data/data_world.csv",
 
 max.date <- max(data_world$date)
 
-
+jpeg("./figures/figure_1.jpeg")
 ggplot(data_world, aes(x=date, y=value, fill=var))+
         geom_area(alpha=0.5)+
         scale_fill_manual(values=c("red", "green", "black"))+ 
@@ -21,3 +21,4 @@ ggplot(data_world, aes(x=date, y=value, fill=var))+
         theme(legend.title=element_blank(),
               legend.position='bottom',
               axis.text.x = element_text(angle = 45, hjust = 1))
+dev.off()
