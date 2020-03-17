@@ -52,9 +52,11 @@ fit <- data.frame(ode(y = init, times = t, func = SIR, parms = Opt_par))
 col <- 1:3 # colour
 
 matplot(fit$time, fit[ , 2:4], type = "l", xlab = "Day", ylab = "Number of subjects", lwd = 2, lty = 1, col = col)
+abline(h=900, col="purple", lty = 4, lwd = 2) # 900 beds with medical ventilators capacity
 matplot(fit$time, fit[ , 2:4], type = "l", xlab = "Day", ylab = "Number of subjects", lwd = 2, lty = 1, col = col, log = "y")
 ## Warning in xy.coords(x, y, xlabel, ylabel, log = log): 1 y value <= 0
 ## omitted from logarithmic plot
+abline(h=900, col="purple", lty = 4, lwd = 2) # 900 beds with medical ventilators capacity
 
 points(Day, Infected)
 legend("bottomright", c("Susceptibles", "Infecteds", "Recovereds"), lty = 1, lwd = 2, col = col, inset = 0.05)
