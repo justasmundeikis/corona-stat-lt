@@ -32,6 +32,7 @@ source("./scripts/data_import_preparation_word_map.R")
 source("./scripts/data_import_preparation_LT.R")
 ```
 
+
 ```{r, include=FALSE}
 # todo
 # reikia importą zipo ir failo paėmimą iš zipo padaryt, nes dabar iš working directory ima
@@ -66,11 +67,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauri
 ## Žemėlapis{.tabset .tabset-fade .tabset-pills}
 ### Žemėlapis 1
 ```{r, echo=FALSE}
-
 data_world <- read.csv("./data/data_world.csv",
                        stringsAsFactors = FALSE)%>%
-  mutate(date=as.Date(date))%>%
-  mutate(var=factor(var, levels=c("active", "recovered", "deaths")))%>%
+        mutate(date=as.Date(date))%>%
+        mutate(var=factor(var, levels=c("active", "recovered", "deaths")))%>%
         filter(var!="confirmed")%>%
         group_by(date, var)%>%
         summarise(value=sum(value))
@@ -90,7 +90,6 @@ ggplot(data_world, aes(x=date, y=value, fill=var))+
         theme(legend.title=element_blank(),
               legend.position='bottom',
               axis.text.x = element_text(angle = 45, hjust = 1))
-
 ```
 
 ### Žemėlapis 2
