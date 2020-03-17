@@ -128,10 +128,28 @@ plot(pressure, type="l")
 
 
 # Lietuva {.tabset .tabset-fade .tabset-pills}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauris id commodo rutrum. Ut ultrices, nisl non maximus pulvinar, risus risus vehicula nulla, ullamcorper lacinia orci ligula ac neque. Suspendisse lacinia, erat vitae tincidunt euismod, arcu justo viverra enim, vel maximus orci ipsum eu libero. Phasellus bibendum ullamcorper ligula. Nunc mauris nulla, dictum porttitor vehicula sed, tincidunt non dolor. Etiam a porta mi, non scelerisque enim. Etiam vel massa tempus, blandit erat eget, pulvinar augue. Cras facilisis justo vel urna egestas consequat. Donec rhoncus tincidunt malesuada. Fusce sit amet volutpat quam. Integer faucibus, turpis id efficitur tempor, ante lorem commodo tortor, et eleifend metus odio iaculis orci. Duis nisl nulla, semper et arcu et, rutrum interdum ipsum. 
-## Bendra statistika
 ## Žemėlapis
+```{r, echo=FALSE}
+library(RColorBrewer)
+df <- read.csv("./data/data_lt_county_cum.csv",
+                           header = TRUE,
+                           stringsAsFactors = FALSE)%>%
+        mutate(date=as.Date(date))%>%
+    filter(var=="confirmed",
+           date==max(date))
 
+shape <- get_eurostat_geospatial(output_class = "sf", resolution = "60", nuts_level = "3")%>%
+  filter(CNTR_CODE=="LT")
+
+df <- left_join(shape, df, by="NUTS_ID")
+
+ggplot(df, aes(fill=values))+
+  geom_sf()+
+ scale_fill_gradient(low = "yellow", high = "red")+
+   labs(title=paste0("Suminis korona virusu apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
+             subtitle = "Šaltinis: corona-stat.lt")
+
+```
 
 # Ekonomika {.tabset .tabset-fade .tabset-pills}
 ## BVP

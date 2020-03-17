@@ -74,4 +74,4 @@ data_world_map <- data_confirmed %>%
         filter(country!="Cruise Ship") # here change only for map
 
 # saving data in subfolder for further usage
-write.csv(data_world_map, "./data/data_world_map.csv")
+write.csv(data_world_map, "./data/data_world_map.csv", row.names = FALSE)
