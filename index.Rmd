@@ -22,12 +22,14 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, error = TRUE, warning = FALS
 
 ```{r, include=FALSE}
 # loading packets that are needed for running the .Rmd 
-readLines("./scripts/loading_R_packets.R")
+source("./scripts/loading_R_packets.R")
 ```
 
 ```{r, include=FALSE}
 # importing JHCSSE and LT data, data preparation
-readLines("./scripts/data_import_preparation.R")
+source("./scripts/data_import_preparation_word.R")
+source("./scripts/data_import_preparation_word_map.R")
+source("./scripts/data_import_preparation_LT.R")
 ```
 
 ```{r, include=FALSE}
@@ -63,13 +65,17 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauri
 
 ## Žemėlapis{.tabset .tabset-fade .tabset-pills}
 ### Žemėlapis 1
-```{r pressure, echo=FALSE}
-data_world<- data %>%
-        group_by(date, var)%>%
-        summarise(value=sum(value))%>%
-        filter(var!="confirmed")
+```{r, echo=FALSE}
 
-max.date <- max(data$date)
+data_world <- read.csv("./data/data_world.csv",
+                       stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  mutate(var=factor(var, levels=c("active", "recovered", "deaths")))%>%
+        filter(var!="confirmed")%>%
+        group_by(date, var)%>%
+        summarise(value=sum(value))
+
+max.date <- max(data_world$date)
 
 
 ggplot(data_world, aes(x=date, y=value, fill=var))+
@@ -86,6 +92,7 @@ ggplot(data_world, aes(x=date, y=value, fill=var))+
               axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+
 ### Žemėlapis 2
 ### Žemėlapis 3
 ### Žemėlapis 4
@@ -109,7 +116,6 @@ ggplot(data_world, aes(x=date, y=value, fill=var))+
 ## Sataitiska A
 
 You can also embed plots, for example:
-
 ```{r, echo=FALSE}
 plot(pressure)
 ```
@@ -117,7 +123,6 @@ plot(pressure)
 ## Sataitiska A
 
 You can also embed plots, for example:
-
 ```{r , echo=FALSE}
 plot(pressure, type="l")
 ```
@@ -131,13 +136,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauri
 
 # Ekonomika {.tabset .tabset-fade .tabset-pills}
 ## BVP
-## BVP (Q)
-## Pramonės produkcija (M)
+## Pramonės produkcija
 ## Užsienio prekyba
 ## Mažmeninė preyba
-## Infliacija (M)
-## Kreditai (M)
-## Užimtumas / nedarbas (M)
+## Infliacija
+## Kreditai
+## Užimtumas / nedarbas
 
 # Prognozės
 
