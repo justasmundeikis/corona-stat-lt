@@ -124,10 +124,10 @@ ggplot(df, aes(fill=value_pop))+
   scale_fill_gradientn(colours=rev(brewer.pal(6,"RdYlBu")),
                        name="Susirgimai\n/100.000 gyventojų",
                        na.value = "grey100", 
-                       values =  rescale(seq(0, 400, length.out = 7)))+
+                       values =  rescale(seq(0, 400, length.out = 6)))+
   labs(title=paste0("Apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
        subtitle = "Šaltinis: JHCSSE Skaičiavimai: corona-stat.lt")
-```
+  ```
 
 
 
