@@ -211,8 +211,8 @@ data_world <- data_world%>%
         select (valstybe, diff)
 
 plotset <- theme(
-        axis.title.x = element_text(size = 20),
-        axis.title.y = element_text(size = 20))
+        axis.title.x = element_text(size = 20.5),
+        axis.title.y = element_text(size = 20.5))
 
 
 ggplot(data_world,aes(x=reorder(valstybe,diff), y=diff, fill=valstybe, group=valstybe)) +
