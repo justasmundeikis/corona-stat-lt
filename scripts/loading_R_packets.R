@@ -10,3 +10,4 @@ if(!require("gsheet")) install.packages("gsheet"); library("gsheet") # for data 
 if(!require("eurostat")) install.packages("eurostat"); library("eurostat") # for data / shape import form eurostat
 if(!require("osmdata")) install.packages("osmdata"); library("osmdata") # for shape import LT county data
 if(!require("sf")) install.packages("sf"); library("sf") #for work with shapes
+if(!require("countrycode")) install.packages("countrycode"); library("countrycode") #for work with shapes
