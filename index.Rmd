@@ -32,6 +32,17 @@ source("./scripts/data_import_preparation_word_map.R")
 source("./scripts/data_import_preparation_LT.R")
 ```
 
+```{r, include=FALSE}
+shape <- readOGR("./shape_files/ne_50m_admin_0_sovereignty.shp",
+                 encoding = "utf-8",
+                 use_iconv = T,
+                 verbose = FALSE,
+                 stringsAsFactors = FALSE)%>%
+  st_as_sf(countries)%>% 
+  select(SOVEREIGNT, POP_EST)%>%
+  mutate(POP_EST=as.numeric(POP_EST))
+
+```
 
 ```{r, include=FALSE}
 # todo
@@ -56,15 +67,15 @@ source("./scripts/data_import_preparation_LT.R")
 
 
 # Įvadas
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauris id commodo rutrum. Ut ultrices, nisl non maximus pulvinar, risus risus vehicula nulla, ullamcorper lacinia orci ligula ac neque. Suspendisse lacinia, erat vitae tincidunt euismod, arcu justo viverra enim, vel maximus orci ipsum eu libero. Phasellus bibendum ullamcorper ligula. Nunc mauris nulla, dictum porttitor vehicula sed, tincidunt non dolor. Etiam a porta mi, non scelerisque enim. Etiam vel massa tempus, blandit erat eget, pulvinar augue. Cras facilisis justo vel urna egestas consequat. Donec rhoncus tincidunt malesuada. Fusce sit amet volutpat quam. Integer faucibus, turpis id efficitur tempor, ante lorem commodo tortor, et eleifend metus odio iaculis orci. Duis nisl nulla, semper et arcu et, rutrum interdum ipsum. 
-
+Tekstas
 # Duomenys
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauris id commodo rutrum. Ut ultrices, nisl non maximus pulvinar, risus risus vehicula nulla, ullamcorper lacinia orci ligula ac neque. Suspendisse lacinia, erat vitae tincidunt euismod, arcu justo viverra enim, vel maximus orci ipsum eu libero. Phasellus bibendum ullamcorper ligula. Nunc mauris nulla, dictum porttitor vehicula sed, tincidunt non dolor. Etiam a porta mi, non scelerisque enim. Etiam vel massa tempus, blandit erat eget, pulvinar augue. Cras facilisis justo vel urna egestas consequat. Donec rhoncus tincidunt malesuada. Fusce sit amet volutpat quam. Integer faucibus, turpis id efficitur tempor, ante lorem commodo tortor, et eleifend metus odio iaculis orci. Duis nisl nulla, semper et arcu et, rutrum interdum ipsum. 
+Tekstas
 
-# Pasaulinė statistika {.tabset .tabset-fade .tabset-pills}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis mauris id commodo rutrum. Ut ultrices, nisl non maximus pulvinar, risus risus vehicula nulla, ullamcorper lacinia orci ligula ac neque. Suspendisse lacinia, erat vitae tincidunt euismod, arcu justo viverra enim, vel maximus orci ipsum eu libero. Phasellus bibendum ullamcorper ligula. Nunc mauris nulla, dictum porttitor vehicula sed, tincidunt non dolor. Etiam a porta mi, non scelerisque enim. Etiam vel massa tempus, blandit erat eget, pulvinar augue. Cras facilisis justo vel urna egestas consequat. Donec rhoncus tincidunt malesuada. Fusce sit amet volutpat quam. Integer faucibus, turpis id efficitur tempor, ante lorem commodo tortor, et eleifend metus odio iaculis orci. Duis nisl nulla, semper et arcu et, rutrum interdum ipsum. 
+# Pasaulinė statistika
+Tekstas
 
-## Žemėlapis{.tabset .tabset-fade .tabset-pills}
+## Paplitimas pasaulyje{.tabset .tabset-fade .tabset-pills}
+
 ### Visi patvirtinti
 ```{r, echo=FALSE}
 df <- read.csv("./data/data_world_map.csv",
@@ -75,28 +86,29 @@ df <- read.csv("./data/data_world_map.csv",
          date==max(date))
 max.date <- max(df$date)
 
-shape <- readOGR("./shape_files/ne_50m_admin_0_sovereignty.shp",
-                 encoding = "utf-8",
-                 use_iconv = T,
-                 verbose = FALSE,
-                 stringsAsFactors = FALSE)%>%
-  st_as_sf(countries)%>% 
-  select(SOVEREIGNT, POP_EST)
-
 df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))
+
+# min(df$value,na.rm = T)
+# max(df$value,na.rm = T)
+
+my_breaks <- c(min(df$value, na.rm = T),10, 100, 1000, 10000, max(df$value, na.rm = T))
 
 ggplot(df, aes(fill=value))+
   geom_sf()+
-  scale_fill_gradientn(colours=rev(brewer.pal(11,"RdYlBu")),
-                       name="Susirgimai",
+  ylim(-55,80)+
+  xlim(-130,140)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
                        na.value = "grey100",
-                       values = rescale(seq(1, 100000, length.out = 11)))+
-  labs(title=paste0("Suminis korona virusu apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
-       subtitle = "Šaltinis: JHCSSE Skaičiavimai: corona-stat.lt")
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+  labs(title=paste0("Patvirtintų apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
 
 ```
 
-### Visi patvirtinti /100.000 pop
+### Visi patvirtinti / pop.
 ```{r, echo=FALSE}
 df <- read.csv("./data/data_world_map.csv",
                header = TRUE,
@@ -107,34 +119,99 @@ df <- read.csv("./data/data_world_map.csv",
 
 max.date <- max(df$date)
 
-shape <- readOGR("./shape_files/ne_50m_admin_0_sovereignty.shp",
-                 encoding = "utf-8",
-                 use_iconv = T,
-                 verbose = FALSE,
-                 stringsAsFactors = FALSE)%>%
-  st_as_sf(countries)%>% 
-  select(SOVEREIGNT, POP_EST)
+df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
+  mutate(POP_EST=as.numeric(POP_EST))%>%
+  mutate(value_pop=value/POP_EST*100000)
+
+# summary(df$value_pop)
+# min(df$value_pop,na.rm = T)
+# max(df$value_pop,na.rm = T)
+
+my_breaks <- c(0.01,0.1,1,15,300)
+
+ggplot(df, aes(fill=value_pop))+
+  geom_sf()+
+  ylim(-55,80)+
+  xlim(-130,140)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+  labs(title=paste0("Patvirtintų apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+```
+
+### Visi aktyvūs
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world_map.csv",
+               header = TRUE,
+               stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  filter(var=="active",
+         date==max(date))
+max.date <- max(df$date)
+
+df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))
+
+# min(df$value,na.rm = T)
+# max(df$value,na.rm = T)
+
+my_breaks <- c(1, 10, 100, 1000, 10000)
+
+ggplot(df, aes(fill=value))+
+  geom_sf()+
+  ylim(-55,80)+
+  xlim(-130,140)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+  labs(title=paste0("Aktyvių pacientų skaičius (duomenys ", max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+
+```
+
+### Aktyvūs / pop.
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world_map.csv",
+               header = TRUE,
+               stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  filter(var=="active",
+         date==max(date))
+
+max.date <- max(df$date)
 
 df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
   mutate(POP_EST=as.numeric(POP_EST))%>%
   mutate(value_pop=value/POP_EST*100000)
 
+# summary(df$value_pop)
+# min(df$value_pop,na.rm = T)
+# max(df$value_pop,na.rm = T)
+
+my_breaks <- c(0.01,0.1,1,15,200)
+
 ggplot(df, aes(fill=value_pop))+
   geom_sf()+
-  scale_fill_gradientn(colours=rev(brewer.pal(6,"RdYlBu")),
-                       name="Susirgimai\n/100.000 gyventojų",
-                       na.value = "grey100", 
-                       values =  rescale(seq(0, 400, length.out = 6)))+
+  ylim(-55,80)+
+  xlim(-130,140)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
   labs(title=paste0("Apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
-       subtitle = "Šaltinis: JHCSSE Skaičiavimai: corona-stat.lt")
-  ```
-
-
-
-
-
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+```
 
 ## Kita statistika {.tabset .tabset-fade .tabset-pills}
+### Susirgę, pasveikę, mirę
 ```{r, echo=FALSE}
 df <- read.csv("./data/data_world.csv",
                        stringsAsFactors = FALSE)%>%
@@ -163,31 +240,151 @@ ggplot(df, aes(x=date, y=value, fill=var))+
 
 
 
-# Europos statistika {.tabset .tabset-fade .tabset-pills}
-## Žemėlapis {.tabset .tabset-fade .tabset-pills}
-### Žemėlapis 1
+# Europos statistika
+## Paplitimas europoje {.tabset .tabset-fade .tabset-pills}
+### Visi patvirtinti
 ```{r, echo=FALSE}
-library(RColorBrewer)
 df <- read.csv("./data/data_world_map.csv",
-                           header = TRUE,
-                           stringsAsFactors = FALSE)%>%
-        mutate(date=as.Date(date))%>%
-    filter(var=="confirmed",
-           date==max(date))
+               header = TRUE,
+               stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  filter(var=="confirmed",
+                CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH","ME","MK","AL","RS","TR","BA","XK", "RU", "BY", "UA", "MD", "MA", "DZ", "TN"),
+         date==max(date),)
 
-shape <- get_eurostat_geospatial(output_class = "sf", resolution = "20", nuts_level = "0")
+max.date <- max(df$date)
 
-df <- left_join(shape, df, by="CNTR_CODE")
+
+df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))
+
+# min(df$value,na.rm = T)
+# max(df$value,na.rm = T)
+
+my_breaks <- c(1,10, 100, 1000, 20000)
 
 ggplot(df, aes(fill=value))+
   geom_sf()+
- scale_fill_gradientn(colours=rev(brewer.pal(10,"Spectral")))+
-   labs(title=paste0("Suminis korona virusu apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
-             subtitle = "Šaltinis:JHCSSE Skaičiavimai: corona-stat.lt")+
-  xlim(c(-23,29))+
-  ylim(c(35,70))
+  xlim(-20,38)+
+  ylim(38,70)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+       geom_sf_label(aes(label =round(value,0)), size=2.5, fill="white" )+
+  labs(title=paste0("Patvirtintų apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+
 ```
 
+### Visi patvirtinti / pop.
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world_map.csv",
+               header = TRUE,
+               stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  filter(var=="confirmed",
+                CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH","ME","MK","AL","RS","TR","BA","XK", "RU", "BY", "UA", "MD", "MA", "DZ", "TN"),
+         date==max(date),)
+
+max.date <- max(df$date)
+
+df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
+  mutate(POP_EST=as.numeric(POP_EST))%>%
+  mutate(value_pop=value/POP_EST*100000)
+
+# summary(df$value_pop)
+# min(df$value_pop,na.rm = T)
+# max(df$value_pop,na.rm = T)
+
+my_breaks <- c(0.05,0.25, 1,5,25)
+
+ggplot(df, aes(fill=value_pop))+
+  geom_sf()+
+  xlim(-20,38)+
+  ylim(38,70)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+  labs(title=paste0("Patvirtintų apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+```
+
+### Visi aktyvūs
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world_map.csv",
+               header = TRUE,
+               stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  filter(var=="active",
+                CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH","ME","MK","AL","RS","TR","BA","XK", "RU", "BY", "UA", "MD", "MA", "DZ", "TN"),
+         date==max(date),)
+
+max.date <- max(df$date)
+
+df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))
+
+# min(df$value,na.rm = T)
+# max(df$value,na.rm = T)
+
+my_breaks <- c(1, 10, 100, 1000, 10000)
+
+ggplot(df, aes(fill=value))+
+  geom_sf()+
+  xlim(-20,38)+
+  ylim(38,70)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+         geom_sf_label(aes(label =round(value,0)), size=2.5, fill="white" )+
+  labs(title=paste0("Aktyvių pacientų skaičius (duomenys ", max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+
+```
+
+### Aktyvūs / pop.
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world_map.csv",
+               header = TRUE,
+               stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  filter(var=="active",
+                CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH","ME","MK","AL","RS","TR","BA","XK", "RU", "BY", "UA", "MD", "MA", "DZ", "TN"),
+         date==max(date),)
+
+max.date <- max(df$date)
+
+df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
+  mutate(value_pop=value/POP_EST*100000)
+
+# summary(df$value_pop)
+# min(df$value_pop,na.rm = T)
+# max(df$value_pop,na.rm = T)
+
+my_breaks <- c(0.05,0.25, 1,5,25)
+
+ggplot(df, aes(fill=value_pop))+
+  geom_sf()+
+  xlim(-20,38)+
+  ylim(38,70)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+  labs(title=paste0("Aktyvių pacientų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+```
+
+## Kita statistika {.tabset .tabset-fade .tabset-pills}
 
 
 # Lietuva {.tabset .tabset-fade .tabset-pills}
