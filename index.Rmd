@@ -8,8 +8,8 @@ output:
     toc_float:
       collapsed: false
       smooth_scroll: true
-    fig_width: 16
-    fig_height: 9
+    fig_width: 9
+    fig_height: 6
     fig_caption: true
     theme: flatly
 editor_options:
@@ -315,6 +315,77 @@ ggplot(df, aes(fill=value_pop))+
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
 ```
 
+### Visi aktyvūs
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world_map.csv",
+               header = TRUE,
+               stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  filter(var=="active",
+                CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH","ME","MK","AL","RS","TR","BA","XK", "RU", "BY", "UA", "MD", "MA", "DZ", "TN"),
+         date==max(date),)
+
+
+df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))
+
+# min(df$value,na.rm = T)
+# max(df$value,na.rm = T)
+
+my_breaks <- c(20, 200, 2000, 20000)
+
+ggplot(df, aes(fill=value))+
+  geom_sf()+
+  xlim(-20,38)+
+  ylim(38,70)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+         geom_sf_label(aes(label =round(value,0)), size=2.5, fill="white" )+
+  labs(title=paste0("Aktyvių pacientų skaičius (duomenys ", max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+
+```
+
+### Aktyvūs / pop.
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world_map.csv",
+               header = TRUE,
+               stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))%>%
+  filter(var=="active",
+                CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH","ME","MK","AL","RS","TR","BA","XK", "RU", "BY", "UA", "MD", "MA", "DZ", "TN"),
+         date==max(date),)
+
+
+max.date <- max(df$date)
+
+df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
+  mutate(POP_EST=as.numeric(POP_EST))%>%
+  mutate(value_pop=value/POP_EST*100000)
+
+# summary(df$value_pop)
+# min(df$value_pop,na.rm = T)
+# max(df$value_pop,na.rm = T)
+
+my_breaks <- c(0.03,0.2,1,7,30)
+
+ggplot(df, aes(fill=value_pop))+
+  geom_sf()+
+  xlim(-20,38)+
+  ylim(38,70)+
+  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+  labs(title=paste0("Apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
+       subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
+```
+
 ## Kita statistika {.tabset .tabset-fade .tabset-pills}
 ### Nauji užsikrėtimai
 ```{r, echo=FALSE}
@@ -441,9 +512,8 @@ ggplot(df,aes(x=reorder(valstybe,value), y=value, fill=valstybe, group=valstybe)
 
 
 # Lietuva {.tabset .tabset-fade .tabset-pills}
-## Žemėlapis
+## Visi patvirtinti
 ```{r, echo=FALSE}
-library(RColorBrewer)
 df <- read.csv("./data/data_lt_county_cum.csv",
                            header = TRUE,
                            stringsAsFactors = FALSE)%>%
@@ -451,18 +521,60 @@ df <- read.csv("./data/data_lt_county_cum.csv",
     filter(var=="confirmed",
            date==max(date))
 
-shape <- get_eurostat_geospatial(output_class = "sf", resolution = "60", nuts_level = "3")%>%
+EU_shape <- get_eurostat_geospatial(output_class = "sf", resolution = "60", nuts_level = "3")%>%
   filter(CNTR_CODE=="LT")
 
-df <- left_join(shape, df, by="NUTS_ID")
+df <- left_join(EU_shape, df, by="NUTS_ID")
+
+
+my_breaks <- c(1,2,4,7,10)
 
 ggplot(df, aes(fill=values))+
   geom_sf()+
- scale_fill_gradientn(colours=rev(brewer.pal(10,"Spectral")))+
-   labs(title=paste0("Suminis korona virusu apsikrėtusiųjų skaičius (duomenys ", max.date,")"),
-             subtitle = "Šaltinis: corona-stat.lt")
+    scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=10),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+           geom_sf_label(aes(label =round(values,0)), size=5, fill="white" )+
+  labs(title=paste0("Visi patvirinti atvejai (duomenys ",max.date,")"),
+       subtitle = "Šaltinis ir skaičiavimai: corona-stat.lt",
+       x="",
+       y="")
 ```
 
+## Visi aktyvūs
+```{r, echo=FALSE}
+df <- read.csv("./data/data_lt_county_cum.csv",
+                           header = TRUE,
+                           stringsAsFactors = FALSE)%>%
+        mutate(date=as.Date(date))%>%
+    filter(var=="active",
+           date==max(date))
+
+EU_shape <- get_eurostat_geospatial(output_class = "sf", resolution = "60", nuts_level = "3")%>%
+  filter(CNTR_CODE=="LT")
+
+df <- left_join(EU_shape, df, by="NUTS_ID")
+
+
+my_breaks <- c(2,4,6,10)
+
+ggplot(df, aes(fill=values))+
+  geom_sf()+
+    scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=10),
+                       name="Skaičius",
+                       trans="log",
+                       na.value = "grey100",
+                       breaks=my_breaks,
+                       labels=my_breaks)+
+           geom_sf_label(aes(label =round(values,0)), size=5, fill="white" )+
+  labs(title=paste0("Aktyvūs atvejai (duomenys ",max.date,")"),
+       subtitle = "Šaltinis ir skaičiavimai: corona-stat.lt",
+       x="",
+       y="")
+```
 
 # Ekonomika {.tabset .tabset-fade .tabset-pills}
 ## BVP
