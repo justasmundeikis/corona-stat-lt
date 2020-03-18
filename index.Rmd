@@ -1,5 +1,4 @@
 ---
-title: "Koronos viruso COVID-19 (2019-nCoV) statistika"
 output:
   html_document:
     toc: true
@@ -15,6 +14,7 @@ output:
 editor_options:
   chunk_output_type: console
 ---
+![](figures/corona-stat-logo.png)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, error = TRUE, warning = FALSE, message = FALSE)
@@ -611,6 +611,8 @@ Lietuvoje šiuo metu iš viso aktyvių atvėjų - `r sum(df$values, na.rm=TRUE)`
 
 Šioje skiltyje pristatomi naujausi ekonominiai rodikliai, kurie padeda atspindėti koronos viruso pasekmes ekonomikai.
 
+![comic: https://xkcd.com/2280/](https://imgs.xkcd.com/comics/2010_and_2020.png )
+
 ## Lietuva{.tabset .tabset-fade .tabset-pills}
 ### BVP
 ### Pramonės produkcija
@@ -632,4 +634,7 @@ Lietuvoje šiuo metu iš viso aktyvių atvėjų - `r sum(df$values, na.rm=TRUE)`
 
 # Prognozės
 ## Sergamumo statistikos prognozės
+
+![https://xkcd.com/2281/](https://imgs.xkcd.com/comics/coronavirus_research.png)
+
 ## Ekonominės prognozės
