@@ -17,7 +17,8 @@
 "confirmed","X2020.03.14",9
 "confirmed","X2020.03.15",12
 "confirmed","X2020.03.16",18
-"confirmed","X2020.03.17",24
+"confirmed","X2020.03.17",26
+"confirmed","X2020.03.18",26
 "recovered","X2020.02.28",0
 "recovered","X2020.02.29",0
 "recovered","X2020.03.01",0
@@ -37,3 +38,4 @@
 "recovered","X2020.03.15",1
 "recovered","X2020.03.16",1
 "recovered","X2020.03.17",1
+"recovered","X2020.03.18",1

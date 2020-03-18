@@ -188,8 +188,72 @@ ggplot(df, aes(fill=value))+
   ylim(c(35,70))
 ```
 
+##Statistika
+###Naujų užsikrėtimų skaičius
+```{r, echo=FALSE}
+data_world <- read.csv("./data/data_world.csv",
+                       stringsAsFactors = FALSE)%>%
+        mutate(date=as.Date(date))%>%
+        mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed")))
 
 
+
+data_world <- data_world%>%filter(valstybe%in%c("Airija","Lietuva","Austrija","Liuksemburgas","Belgija", "Malta" ,"Bulgarija","Nyderlandai","Čekija","Portugalija","Danija",
+                                                "Prancūzija","Estija","Rumunija","Graikija","Slovakija", "Ispanija","Slovėnija","Italija","Suomija","Kipras",
+                                                "Švedija","Kroatija","Vengrija","Latvija","Vokietija","Lenkija"), var=="confirmed" )
+date1<-max(data_world$date)
+
+data_world <- data_world%>%
+        filter(date==date1-3|date==date1) %>%
+        group_by(valstybe) %>%
+        mutate(diff = value - lag(value, default = first(value))) %>%
+        filter(date!=today()-3 & diff!=0)%>%
+        select (valstybe, diff)
+
+plotset <- theme(
+        axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20))
+
+
+ggplot(data_world,aes(x=reorder(valstybe,diff), y=diff, fill=valstybe, group=valstybe)) +
+        geom_bar(stat='identity') +
+        geom_text(aes(label=diff, y=diff), size=6, vjust=-0.75) +
+        labs(x="Valstybė", y="Susirgimų skaičius", title=paste0("Susirgimų per paskutines 3d. skaičius ", date1+1, " duomenimis"),
+             subtitle="Šaltinis: www.corona-stat.lt" )+
+        scale_fill_discrete(name='Valstybė', labels=data_world$valstybe) +
+        theme(legend.title=element_blank(),
+              legend.position='none',
+              axis.text=element_text(size=15),
+              axis.text.x=element_text(angle=45, hjust=1))+
+        plotset
+
+```
+
+###Naujų užsikrėtimų skaičius 100tūkst.gyventojų
+```{r, echo=FALSE}
+pop <- get_eurostat("tps00001")
+pop$time <- as.character(pop$time)
+pop<-pop%>% filter(time=="2019-01-01")%>%
+        mutate(valstybe=countrycode(geo, origin = "eurostat", destination =  "cldr.short.lt",nomatch = NULL ))%>%
+        select(valstybe,values) %>% 
+        right_join(data_world, pop, by="valstybe")%>%
+        na.omit()%>%
+        mutate(reiksme=(diff/(values/100000)))%>%
+        select(valstybe, reiksme)%>%
+        mutate(reiksme=round(reiksme,3))
+
+ggplot(pop,aes(x=reorder(valstybe,reiksme), y=reiksme, fill=valstybe, group=valstybe)) +
+        geom_bar(stat='identity') +
+        geom_text(aes(label=reiksme, y=reiksme), size=5, vjust=-0.75)+
+        labs(x="Valstybė", y="Susirgimų skaičius", title=paste0("Susirgimų skaičius 100.000 gyventojų per paskutines 3d. ", date1+1, " duomenimis"),
+             subtitle="Šaltinis: www.corona-stat.lt" )+
+        scale_fill_discrete(name='Valstybė', labels=data_world$valstybe) +
+        theme(legend.title=element_blank(),
+              legend.position='none',
+              axis.text=element_text(size=15),
+              axis.text.x=element_text(angle=45, hjust=1))+
+        plotset
+```
 # Lietuva {.tabset .tabset-fade .tabset-pills}
 ## Žemėlapis
 ```{r, echo=FALSE}
