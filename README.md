@@ -1,6 +1,6 @@
 # Intro
 
-We are working on simple html page for Lithuania (and other Baltic states) with statistics on corona virus spread, that can be reached at [corona-stat.lt](corona-stat.lt). The html file is produced using Rstudio (Rmarkdown) and is fully reproducable.
+We are working on simple html page for Lithuania (and other Baltic states) with statistics on corona virus spread, that can be reached at [corona-stat.lt](https://corona-stat.lt/). The html file is produced using Rstudio (Rmarkdown) and is fully reproducable.
 
 # Team
 * Armintė Globytė
@@ -17,3 +17,5 @@ We are working on simple html page for Lithuania (and other Baltic states) with 
 ...
 
 # Contact
+
+corona-stat@protonmail.com

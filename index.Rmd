@@ -148,13 +148,13 @@ max.date <- max(df$date)
 
 df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
   mutate(POP_EST=as.numeric(POP_EST))%>%
-  mutate(value_pop=value/POP_EST*100000)
+  mutate(value_pop=value/POP_EST*1000000)
 
 # summary(df$value_pop)
 # min(df$value_pop,na.rm = T)
 # max(df$value_pop,na.rm = T)
 
-my_breaks <- c(0.01,0.1,1,15,300)
+my_breaks <- c(0.1,1,10,100,1500,20000)
 
 ggplot(df, aes(fill=value_pop))+
   geom_sf()+
@@ -166,7 +166,7 @@ ggplot(df, aes(fill=value_pop))+
                        na.value = "grey100",
                        breaks=my_breaks,
                        labels=my_breaks)+
-  labs(title=paste0("Patvirtintų apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
+  labs(title=paste0("Patvirtintų apsikrėtusiųjų skaičius tenkantis 1 mln. gyventojų (duomenys ",max.date,")"),
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
 ```
 
@@ -215,7 +215,7 @@ max.date <- max(df$date)
 
 df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
   mutate(POP_EST=as.numeric(POP_EST))%>%
-  mutate(value_pop=value/POP_EST*100000)
+  mutate(value_pop=value/POP_EST*1000000)
 
 # summary(df$value_pop)
 # min(df$value_pop,na.rm = T)
@@ -233,7 +233,7 @@ ggplot(df, aes(fill=value_pop))+
                        na.value = "grey100",
                        breaks=my_breaks,
                        labels=my_breaks)+
-  labs(title=paste0("Apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
+  labs(title=paste0("Apsikrėtusiųjų skaičius tenkantis 1 mln. gyventojų (duomenys ",max.date,")"),
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
 ```
 
@@ -266,40 +266,60 @@ ggplot(df, aes(x=date, y=value, fill=var))+
 ```
 
 ### Top 5 pasaulio šalys
-```{r,echo=FALSE}
-data <- read.csv("./data/data_world.csv",
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world.csv",
                  stringsAsFactors = FALSE)%>%
-        mutate(date=as.Date(date))%>%
-        group_by(date,valstybe,var)%>%
-        summarise(sumvalue=sum(value))%>%
-        filter(var=="confirmed")
+       filter(var=="confirmed")%>%
+  spread(date, value)%>%
+  arrange(desc(.[,ncol(.)]))%>%
+  .[1:5,]%>%
+  gather(date, value, 4:ncol(.))%>%
+        mutate(date=as.Date(date))
 
-Sys.setlocale("LC_ALL","Lithuanian")
-Encoding(data$valstybe)<-"UTF-8"
-
-names <- as.vector(data$valstybe)
-
-#naujausia data
-library(data.table)
-data1 <- setDT(data)[,.SD[which.max(date)],keyby=valstybe]
-
-#top20
-data1 <- arrange(data1,desc(sumvalue))
-data1 <- top_n(data1,5)
-names <- as.factor(data1$valstybe)
-
-maximalios <- filter(data, valstybe%in%names)
-
-
-ggplot(maximalios, aes(x=date, y=sumvalue)) +
-        geom_line(aes(color=valstybe))+
-        geom_point(aes(color=valstybe))+
-        labs(x="Valstybė", y="Susirgimų skaičius", title="Susirgimų skaičius daugiausia patvirtintų atvejų turinčiose pasaulio šalyse", subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt" )+
-        scale_fill_discrete(name='Valstybė', labels=maximalios$valstybe) +
+ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
+        geom_line(size=1.1)+
+        geom_point(size=2)+
+    scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
+        labs(
+          title="Susirgimų skaičius daugiausia patvirtintų atvejų turinčiose pasaulio šalyse",
+          subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt",
+          x="Laikotarpis",
+          y="Susirgimų skaičius"
+          )+
+  scale_x_date(breaks = "1 week")+
         theme(axis.text=element_text(size=8),
               axis.text.x=element_text(angle=45, hjust=1))
 
 ```
+
+
+### Top 10 šalių be Kinijos
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world.csv",
+                 stringsAsFactors = FALSE)%>%
+       filter(var=="confirmed")%>%
+  spread(date, value)%>%
+  arrange(desc(.[,ncol(.)]))%>%
+  .[2:10,]%>%
+  gather(date, value, 4:ncol(.))%>%
+        mutate(date=as.Date(date))
+
+ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
+        geom_line(size=1.1)+
+        geom_point(size=2)+
+    scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
+        labs(
+          title="Susirgimų skaičius daugiausia patvirtintų atvejų turinčiose pasaulio šalyse",
+          subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt",
+          x="Laikotarpis",
+          y="Susirgimų skaičius"
+          )+
+  scale_x_date(breaks = "1 week")+
+        theme(axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))
+
+```
+
 
 # Europos statistika
 ## Paplitimas europoje {.tabset .tabset-fade .tabset-pills}
@@ -353,13 +373,13 @@ max.date <- max(df$date)
 
 df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
   mutate(POP_EST=as.numeric(POP_EST))%>%
-  mutate(value_pop=value/POP_EST*100000)
+  mutate(value_pop=value/POP_EST*1000000)
 
 # summary(df$value_pop)
 # min(df$value_pop,na.rm = T)
 # max(df$value_pop,na.rm = T)
 
-my_breaks <- c(0.05,0.25, 1,5,25)
+my_breaks <- c(0.5,2.5, 10,50,250)
 
 ggplot(df, aes(fill=value_pop))+
   geom_sf()+
@@ -371,7 +391,7 @@ ggplot(df, aes(fill=value_pop))+
                        na.value = "grey100",
                        breaks=my_breaks,
                        labels=my_breaks)+
-  labs(title=paste0("Patvirtintų apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
+  labs(title=paste0("Patvirtintų apsikrėtusiųjų skaičius tenkantis 1 mln. gyventojų (duomenys ",max.date,")"),
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
 ```
 
@@ -424,13 +444,13 @@ max.date <- max(df$date)
 
 df <- left_join(shape, df, by=c("SOVEREIGNT"="country"))%>%
   mutate(POP_EST=as.numeric(POP_EST))%>%
-  mutate(value_pop=value/POP_EST*100000)
+  mutate(value_pop=value/POP_EST*1000000)
 
 # summary(df$value_pop)
 # min(df$value_pop,na.rm = T)
 # max(df$value_pop,na.rm = T)
 
-my_breaks <- c(0.03,0.2,1,7,30)
+my_breaks <- c(0.3,2,10,70,300)
 
 ggplot(df, aes(fill=value_pop))+
   geom_sf()+
@@ -442,7 +462,7 @@ ggplot(df, aes(fill=value_pop))+
                        na.value = "grey100",
                        breaks=my_breaks,
                        labels=my_breaks)+
-  labs(title=paste0("Apsikrėtusiųjų skaičius tenkantis 100.000 gyventojų (duomenys ",max.date,")"),
+  labs(title=paste0("Apsikrėtusiųjų skaičius tenkantis 1 mln. gyventojų (duomenys ",max.date,")"),
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt")
 ```
 
