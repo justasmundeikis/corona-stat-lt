@@ -1,5 +1,5 @@
 ---
-title: "Coronavirus COVID-19 (2019-nCoV) statistics in Baltic states"
+title: "Koronos viruso COVID-19 (2019-nCoV) statistika"
 output:
   html_document:
     toc: true
@@ -67,13 +67,38 @@ shape <- readOGR("./shape_files/ne_50m_admin_0_sovereignty.shp",
 
 
 
-# Įvadas
-Tekstas
-# Duomenys
-Tekstas
+# Info
+
+Koronos virusas (SARS-CoV-2) pirmą kartą užfiksuotas lapkričio 17 d. Kinijoje, visgi Kinija ilgą laiką neigė ir slėpė informaciją apie viruso plitimą. Sausio pabaigoje užfiksuoti pirmieji atvejai Europoje. Lietuvoje pirmą kartą virusas diagnozuotas vasario 28 d. Po pradinės ramybės, sparčiai pradėjus daugėti naujiems atvejams, pradėjo didėti ir visuomenės bei žiniasklaidos dėmesys šiam virusui ir jo paplitimui šalyje. Nors internete yra įvairų statistikų, kuriose pateikiama globali statistika, mūsų nuomone Lietuvoje reikėjo tinklapio, kuriame greitai būtų galima įvertinti atrinktą svarbiausią statistiką, ne tik apie pasaulinę (europinę) statistiką, bet ir apie paplitimą Lietuvoje bei kitus svarbius faktus.
+
+**Šį puslapį rengia**
+
+* Arminte Globytė (VU EVAF)
+* Justas Mundeikis (Lithuanian-Economy.net)
+* Rokas Klydžia
+* Tomas Dzedulionis (VU EVAF)
+
+Aptikus netikslumų arba turint klausimų bei pasiūlymų galite kreiptis el. paštu: corona-stat@protonmail.com
+
+**Tinklapio aktualumas**
+
+* statistika / grafikai / lentelės ataujinami - 09:00, 12:00, 15:00, 18:00, 21:00 Lietuvos laiku
+* tekstas šiuo metu dar pildomas, atnaujinimus planuojame kartą per savaitę
+
+**Duomenys**
+
+Šiame tinklapyje pateikiami apibendrinti statistiniai rodikliai, kurie remiasi 
+
+* John Hopkins CSSE ([link](https://github.com/CSSEGISandData/COVID-19)) renkama pasauline statistika
+* Mūsų komandos renkama Lietuvos statistika
+* Kitais šaltiniais - Eurostat, Lietuvos statistikos departamento, Lietuvos Banko bei kt.
+
+**PERSPĖJIMAS**
+
+Tinklapis vis dar tebėra rengiamas, todėl galimi laikini sutrkimai. Tinklapio "baigtinė" versija planuojama atsiras - 2020-03-22.
 
 # Pasaulinė statistika
-Tekstas
+Žemiau pateikiama atrinkta statistika, kuri leidžia geriau įvertinti coronos viruso paplitimą pasaulyje.
 
 ## Paplitimas pasaulyje{.tabset .tabset-fade .tabset-pills}
 
@@ -510,7 +535,6 @@ ggplot(df,aes(x=reorder(valstybe,value), y=value, fill=valstybe, group=valstybe)
 
 ```
 
-
 # Lietuva {.tabset .tabset-fade .tabset-pills}
 ## Visi patvirtinti
 ```{r, echo=FALSE}
@@ -531,7 +555,7 @@ my_breaks <- c(1,2,4,7,10)
 
 ggplot(df, aes(fill=values))+
   geom_sf()+
-    scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=10),
+    scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
                        name="Skaičius",
                        trans="log",
                        na.value = "grey100",
@@ -542,7 +566,12 @@ ggplot(df, aes(fill=values))+
        subtitle = "Šaltinis ir skaičiavimai: corona-stat.lt",
        x="",
        y="")
+
 ```
+
+
+Lietuvoje šiuo metu iš viso patvirtintų atvėjų - `r sum(df$values, na.rm=TRUE)`
+
 
 ## Visi aktyvūs
 ```{r, echo=FALSE}
@@ -563,7 +592,7 @@ my_breaks <- c(2,4,6,10)
 
 ggplot(df, aes(fill=values))+
   geom_sf()+
-    scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=10),
+    scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
                        name="Skaičius",
                        trans="log",
                        na.value = "grey100",
@@ -576,13 +605,31 @@ ggplot(df, aes(fill=values))+
        y="")
 ```
 
-# Ekonomika {.tabset .tabset-fade .tabset-pills}
-## BVP
-## Pramonės produkcija
-## Užsienio prekyba
-## Mažmeninė preyba
-## Infliacija
-## Kreditai
-## Užimtumas / nedarbas
+Lietuvoje šiuo metu iš viso aktyvių atvėjų - `r sum(df$values, na.rm=TRUE)`
+
+# Ekonominiai rodikliai
+
+Šioje skiltyje pristatomi naujausi ekonominiai rodikliai, kurie padeda atspindėti koronos viruso pasekmes ekonomikai.
+
+## Lietuva{.tabset .tabset-fade .tabset-pills}
+### BVP
+### Pramonės produkcija
+### Užsienio prekyba
+### Mažmeninė preyba
+### Infliacija
+### Kreditai
+### Užimtumas / nedarbas
+
+## Pagrindinės ES šalys{.tabset .tabset-fade .tabset-pills}
+### BVP
+### Pramonės produkcija
+### Užsienio prekyba
+### Mažmeninė preyba
+### Infliacija
+### Kreditai
+### Užimtumas / nedarbas
+
 
 # Prognozės
+## Sergamumo statistikos prognozės
+## Ekonominės prognozės
