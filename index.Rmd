@@ -265,7 +265,41 @@ ggplot(df, aes(x=date, y=value, fill=var))+
               axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+### Top 5 pasaulio šalys
+```{r,echo=FALSE}
+data <- read.csv("./data/data_world.csv",
+                 stringsAsFactors = FALSE)%>%
+        mutate(date=as.Date(date))%>%
+        group_by(date,valstybe,var)%>%
+        summarise(sumvalue=sum(value))%>%
+        filter(var=="confirmed")
 
+Sys.setlocale("LC_ALL","Lithuanian")
+Encoding(data$valstybe)<-"UTF-8"
+
+names <- as.vector(data$valstybe)
+
+#naujausia data
+library(data.table)
+data1 <- setDT(data)[,.SD[which.max(date)],keyby=valstybe]
+
+#top20
+data1 <- arrange(data1,desc(sumvalue))
+data1 <- top_n(data1,5)
+names <- as.factor(data1$valstybe)
+
+maximalios <- filter(data, valstybe%in%names)
+
+
+ggplot(maximalios, aes(x=date, y=sumvalue)) +
+        geom_line(aes(color=valstybe))+
+        geom_point(aes(color=valstybe))+
+        labs(x="Valstybė", y="Susirgimų skaičius", title="Susirgimų skaičius daugiausia patvirtintų atvejų turinčiose pasaulio šalyse", subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt" )+
+        scale_fill_discrete(name='Valstybė', labels=maximalios$valstybe) +
+        theme(axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))
+
+```
 
 # Europos statistika
 ## Paplitimas europoje {.tabset .tabset-fade .tabset-pills}
