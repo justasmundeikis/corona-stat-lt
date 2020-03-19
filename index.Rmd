@@ -580,13 +580,247 @@ ggplot(df,aes(x=reorder(valstybe,value), y=value, fill=valstybe, group=valstybe)
   geom_bar(stat='identity',
            fill="steelblue")+
   geom_text(aes(label=value, y=value), size=3, vjust=-0.75)+
-  labs(title=paste0("Naujų susirgimų per paskutines 3d. pokytis % ( ", max.date, " duomenimis)"),
+  labs(title=paste0("Naujų susirgimų per paskutines 3d. pokytis % ( ", max.date+1, " duomenimis)"),
        subtitle="Šaltinis: www.corona-stat.lt",
        x="Valstybė", 
        y="proc. pokytis")+
    theme(legend.title=element_blank(),
         legend.position='none',
         axis.text.x=element_text(angle=45, hjust=1))
+
+```
+
+### Susirgimų pokytis paskelbus karantiną
+```{r, echo=FALSE}
+df<- read.csv("./data/data_world.csv",
+               stringsAsFactors = FALSE)%>%
+        filter(var=="confirmed", valstybe%in%c("Airija", "Austrija", "Belgija", "Čekija", "Danija", 
+                                               "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lietuva", "Liuksemburgas", "Nyderlandai", "Norvegija",
+                                               "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Vengrija", "Vokietija"), 
+               var=="confirmed" )%>%
+        spread(date, value)%>%
+        arrange(desc(.[,ncol(.)]))%>%
+        .[1:5,]%>%
+        gather(date, value, 4:ncol(.))%>%
+        mutate(date=as.Date(date)) %>%
+        group_by(valstybe) %>%
+        mutate(diff = value - lag(value, default = first(value))) %>%
+        select (valstybe,date, diff)
+
+blt <-  read.csv("./data/data_world.csv",
+                 stringsAsFactors = FALSE)%>%
+        filter(var=="confirmed", valstybe%in%c("Estija", "Latvija", "Lenkija", "Lietuva"))%>%
+        mutate(date=as.Date(date)) %>%
+        group_by(valstybe) %>%
+        mutate(diff = value - lag(value, default = first(value))) %>%
+        select (valstybe,date, diff)
+
+df <- rbind(df,blt)
+
+valstybe<-c("Airija", "Austrija", "Belgija", "Čekija", "Danija", 
+            "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lietuva", "Liuksemburgas", "Nyderlandai", "Norvegija",
+            "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Vengrija", "Vokietija")
+diena<-c("2020-03-13", "2020-03-11","2020-03-18", "2020-03-16","2020-03-13", "2020-03-12","2020-03-16", "2020-03-14","2020-03-16", "2020-03-11","2020-03-11",
+         "2020-03-13","2020-03-17", "2020-03-11","2020-03-16", "2020-03-13","2020-03-11", "2020-03-12","2020-03-12", "2020-03-16","2020-03-16", "2020-03-16","2020-03-20", "2020-03-16"
+         ,"2020-03-13", "2020-03-15")
+
+dff<-data.frame(valstybe,diena) %>%
+        mutate(diena=as.Date(as.character(diena)))
+
+df <- left_join(df,dff)
+
+max.date<-max(df$date)
+
+ggplot(df, aes(x=date, y=diff)) +
+        geom_area(alpha=0.5, color="darkred", fill="red")+
+        scale_x_date()+
+        labs(title=paste0('Covid-19 susirgimų pokytis TOP5 ir Baltijos valstybėse įvedus karantiną',
+                          max.date+1), subtitle=" Šaltinis: corona-stat.lt", x="Data", y="Susirgimų skaičius")+
+        facet_wrap(~valstybe, ncol=3, scales='free_y')+
+        geom_vline(data = df, mapping = aes(xintercept = diena), color="blue" , size=1.1)
+```
+
+### Susirgimų/pasveikimų/mirčių santykis
+```{r, echo=FALSE}
+df <- read.csv("./data/data_world.csv",
+                       stringsAsFactors = FALSE)%>%
+                mutate(date=as.Date(date))%>%
+                mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed")))%>%
+  filter(valstybe%in%c("Airija", "Austrija", "Belgija", "Bulgarija", "Čekija", "Danija", 
+                                        "JK", "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lichtenšteinas", "Lietuva", "Liuksemburgas", 
+                                        "Malta", "Nyderlandai", "Norvegija", "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Švedija", "Vengrija", "Vokietija"), var=="confirmed") %>%
+                spread(date, value)%>%
+                arrange(desc(.[,ncol(.)]))%>%
+                .[1:6,]%>%
+                gather(date, value, 4:ncol(.))%>%
+                mutate(date=as.Date(date))%>%
+                select(valstybe, date, value, var)
+        
+        names<-as.vector(unique(df$valstybe))
+        max.date<-max(df$date)
+        
+        df <- read.csv("./data/data_world.csv",
+                       stringsAsFactors = FALSE)%>%
+                mutate(date=as.Date(date))%>%
+                mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed"))) %>% 
+                filter(valstybe%in%names, var!="confirmed")%>%
+                select(valstybe, date, value, var)%>%
+                group_by(valstybe)
+        
+        ggplot(df, aes(x=date, y=value, fill=var)) +
+                geom_area(alpha=0.5) +
+                labs(title=paste0('Covid-19 atvejai TOP6 Europos šalyse ',
+                                  max.date+1," duomenimis"), subtitle=" Šaltinis: corona-stat.lt", x="Data", y="Susirgimų skaičius") +
+                scale_fill_manual(values=c('red', 'green', 'black'), labels=c("Aktyvūs","Pasveikę","Mirtys")) +
+                theme(legend.position='bottom',
+                      axis.text.x=element_text(angle=45, hjust=1)) +
+                facet_wrap(~valstybe, ncol=3, scales='free_y', nrow=2)
+
+```
+
+### Bendras atvejų skaičius
+```{r, echo=FALSE}
+        data_world <- read.csv("./data/data_world.csv",
+                               stringsAsFactors = FALSE)%>%
+                mutate(date=as.Date(date))%>%
+                mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed")))
+        susirgimaiEU <- data_world%>%filter(valstybe%in%c("Airija", "Austrija", "Belgija", "Bulgarija", "Čekija", "Danija", 
+                                                          "JK", "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lichtenšteinas", "Lietuva", "Liuksemburgas", 
+                                                          "Malta", "Nyderlandai", "Norvegija", "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Švedija", "Vengrija", "Vokietija"), var!="confirmed") %>%
+                group_by(date, var)%>%
+                summarise(value=sum(value))
+        
+        max.date<-max(df$date)
+
+        ggplot(susirgimaiEU, aes(x=date, y=value, fill=var))+
+                geom_area(alpha=0.5)+
+                scale_fill_manual(values=c("red", "green", "black"),  labels=c("Aktyvūs","Pasveikę","Mirtys"))+ 
+                scale_x_date(breaks="1 week")+
+                scale_y_continuous(breaks =pretty_breaks())+
+                labs(title=paste0("Bendras COVID-19 atvejų skaičius Europoje ", max.date+1," duomenimis"),
+                     subtitle = "Šaltinis: 2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE",
+                     x="Data",
+                     y="Skaičius")+
+                theme(legend.title=element_blank(),
+                      legend.position='bottom',
+                      axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### Bendras naujų susirgimų kitimas
+```{r, echo=FALSE}
+        df <- read.csv("./data/data_world.csv",
+                       stringsAsFactors = FALSE)%>%
+                mutate(date=as.Date(date))%>%
+                mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed")))
+        df <- df%>%filter(valstybe%in%c("Airija", "Austrija", "Belgija", "Bulgarija", "Čekija", "Danija", 
+                                        "JK", "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lichtenšteinas", "Lietuva", "Liuksemburgas", 
+                                        "Malta", "Nyderlandai", "Norvegija", "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Švedija", "Vengrija", "Vokietija"), var=="confirmed" )
+      
+         dff <- df%>%
+                group_by(valstybe) %>%
+                mutate(diff = value - lag(value, default = first(value))) %>%
+                select (valstybe,date, diff)%>%
+                        group_by(date)%>%
+                        summarise(diff=sum(diff))
+         
+         max.date<-max(df$date)
+         
+        ggplot(dff, aes(x=date, y=diff)) +
+                geom_point(size=2,color="black")+
+                scale_x_date(breaks="1 week")+
+                scale_y_continuous(breaks = seq(0, max(dff$diff), by = 1000))+
+                labs(x="Data", y="Susirgimų skaičius", title=paste0('Covid-19 nauji susirgimai Europoje ',max.date+1," duomenimis"),
+                    subtitle="Šaltinis: www.corona-stat.lt")+
+                geom_smooth(fill="red")
+
+```
+
+### Pasveikimai
+```{r, echo=FALSE}
+        df <- read.csv("./data/data_world.csv",
+                               stringsAsFactors = FALSE)%>%
+                mutate(date=as.Date(date))%>%
+                mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed")))%>%
+                filter(valstybe%in%c("Airija", "Austrija", "Belgija", "Bulgarija", "Čekija", "Danija", 
+                                           "JK", "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lichtenšteinas", "Lietuva", "Liuksemburgas", 
+                                           "Malta", "Nyderlandai", "Norvegija", "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Švedija", "Vengrija", "Vokietija"), var=="recovered") %>%
+                spread(date, value)%>%
+                arrange(desc(.[,ncol(.)]))%>%
+                .[1:6,]%>%
+                gather(date, value, 4:ncol(.))%>%
+                mutate(date=as.Date(date))%>%
+                select(valstybe, date, value, var)
+        
+        max.date<-max(df$date)
+        
+        ggplot(df, aes(x=date, y=value, fill=var)) +
+                geom_area(alpha=0.5, color="black", fill="green") +
+                labs(title=paste0('Pasveikusių žmonių skaičius TOP 6 Europos valstybėse ', max.date+1), subtitle="Šaltinis: corona-stat.lt",
+                     x="Data", y="Skaičius") +
+               theme(legend.position='bottom',
+              axis.text.x=element_text(angle=45, hjust=1)) +
+                facet_wrap(~valstybe, ncol=3, scales='free_y', nrow=2)   
+```
+
+### Mirtys
+```{r, echo=FALSE}
+        df <- read.csv("./data/data_world.csv",
+                               stringsAsFactors = FALSE)%>%
+                mutate(date=as.Date(date))%>%
+                mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed")))%>%
+                filter(valstybe%in%c("Airija", "Austrija", "Belgija", "Bulgarija", "Čekija", "Danija", 
+                                                    "JK", "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lichtenšteinas", "Lietuva", "Liuksemburgas", 
+                                                    "Malta", "Nyderlandai", "Norvegija", "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Švedija", "Vengrija", "Vokietija"), var=="deaths") %>%
+                spread(date, value)%>%
+                arrange(desc(.[,ncol(.)]))%>%
+                .[1:6,]%>%
+                gather(date, value, 4:ncol(.))%>%
+                mutate(date=as.Date(date))%>%
+                select(valstybe, date, value, var)
+        
+        max.date<-max(df$date)
+        
+        ggplot(df, aes(x=date, y=value, fill=var)) +
+                geom_area(alpha=0.5, color="grey", fill="black") +
+                labs(title=paste0('Covid-19 sukeltų mirčių skaičius TOP 6 Europos valstybėse ',
+                                  max.date+1),
+                     subtitle="Šaltinis: corona-stat.lt",
+                     x="Data", y="Skaičius") +
+                theme(legend.position='bottom',
+              axis.text.x=element_text(angle=45, hjust=1))+
+                facet_wrap(~valstybe, ncol=3, nrow = 2, scales='free_y')   
+
+```
+
+### Top 5 Valstybės
+```{r, echo=FALSE}
+
+        df <- read.csv("./data/data_world.csv",
+                       stringsAsFactors = FALSE)%>%
+                filter(var=="confirmed", valstybe%in%c("Airija", "Austrija", "Belgija", "Bulgarija", "Čekija", "Danija", 
+                                                       "JK", "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lichtenšteinas", "Lietuva", "Liuksemburgas", 
+                                                       "Malta", "Nyderlandai", "Norvegija", "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Švedija", "Vengrija", "Vokietija"))%>%
+                spread(date, value)%>%
+                arrange(desc(.[,ncol(.)]))%>%
+                .[1:5,]%>%
+                gather(date, value, 4:ncol(.))%>%
+                mutate(date=as.Date(date))
+
+max.date<-max(df$date)
+
+        ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
+                geom_line(size=1.1)+
+                geom_point(size=2)+
+                scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
+                labs(
+                        title="Susirgimų skaičius 5-iose daugiausia patvirtintų atvejų turinčiose Europos šalyse ",max.date+1,
+                        subtitle="Šaltinis:corona-stat.lt",
+                        x="Laikotarpis",
+                        y="Susirgimų skaičius"
+                )+
+                scale_x_date(breaks = "1 week")+
+                theme(axis.text=element_text(size=8),
+                      axis.text.x=element_text(angle=45, hjust=1))
 
 ```
 
@@ -625,7 +859,7 @@ ggplot(df, aes(fill=values))+
 ```
 
 
-Lietuvoje šiuo metu iš viso patvirtintų atvėjų - `r sum(df$values, na.rm=TRUE)`
+Lietuvoje šiuo metu iš viso patvirtintų atvejų - `r sum(df$values, na.rm=TRUE)`
 
 
 ## Visi aktyvūs
