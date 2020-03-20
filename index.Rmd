@@ -320,7 +320,53 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
 
 ```
 
+###Top 10 pasaulio šalių pagal mirčių skaičių
+```{r,echo=FALSE}
+df <- read.csv("./data/data_world.csv",
+               stringsAsFactors = FALSE)%>%
+        filter(var=="deaths")%>%
+        spread(date, value)%>%
+        arrange(desc(.[,ncol(.)]))%>%
+        .[1:10,]%>%
+        gather(date, value, 4:ncol(.))%>%
+        mutate(date=as.Date(date))
+maxdate <- max(df$date)
 
+df<-filter(df,date==maxdate)
+
+
+ggplot(df,aes(x=valstybe, y=value, fill=valstybe))+
+        geom_bar(stat='identity') +
+        geom_text(aes(label=value, y=value), size=2.5, vjust=-0.5)+
+        labs(x="Valstybė", y="Mirčių skaičius", title="Mirčių skaičius top 10 pasaulio šalių", subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt" )+
+        theme(axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))
+```
+
+###Top 10 šalių pagal susirgimų skaičių mirtingumo rodiklis
+```{r,echo=FALSE}
+df <- read.csv("./data/data_world.csv",
+               stringsAsFactors = FALSE)%>%
+        filter(var%in%c("deaths","confirmed"))%>%
+        mutate(date=as.Date(date))%>%
+        spread(var,value)%>%
+        mutate(deathrate=deaths/confirmed*100)%>%
+        mutate_at(vars(deathrate),funs(round(.,2)))
+
+maxdate <- max(df$date)
+df <- filter(df,date==maxdate)%>%
+        arrange(.,desc(confirmed))%>%
+        top_n(.,10, confirmed)
+
+
+ggplot(df,aes(x=valstybe, y=deathrate, fill=valstybe))+
+        geom_bar(stat='identity') +
+        geom_text(aes(label=deathrate, y=deathrate), size=2.5, vjust=-0.5)+
+        labs(x="Valstybė", y="Mirtingumas, %", title="Mirtingumas top 10 pasaulio šalių pagal susirgimų skaičių", subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt" )+
+        theme(axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))
+ 
+```
 # Europos statistika
 ## Paplitimas europoje {.tabset .tabset-fade .tabset-pills}
 ### Visi patvirtinti
