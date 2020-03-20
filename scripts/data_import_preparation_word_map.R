@@ -72,6 +72,7 @@ data_world_map <- data_confirmed %>%
         gather(key=var, value=value, -c(country, date)) %>%
         mutate(var=factor(var, levels=c("confirmed", "active", "recovered", "deaths")))%>%
         filter(country!="Cruise Ship")%>% # here change only for map
+        mutate(valstybe=countrycode(country, origin = "country.name", destination =  "cldr.short.lt",nomatch = NULL ))%>%
         mutate(CNTR_CODE=countrycode(country, origin = "country.name", destination =  "eurostat",nomatch = NULL )) 
 
 # saving data in subfolder for further usage
