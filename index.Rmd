@@ -530,7 +530,7 @@ ggplot(df, aes(x=date, y=value, fill=var))+
         scale_fill_manual(values=c("red", "green", "black"),
                           labels=c("Aktyvūs", "Pasveikę", "Mirę") )+
         scale_x_date(breaks="1 week")+
-        labs(title=paste0("Europos ekonominės erdves koronaviruso atvejų skaičius ir pasiskirstymas (naujausi duomenys ", max.date, ")"),
+        labs(title=paste0("EEE koronaviruso atvejų skaičius ir pasiskirstymas (naujausi duomenys ", max.date, ")"),
              subtitle = "Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt",
              x="Data",
              y="Skaičius")+
@@ -660,8 +660,11 @@ max.date<-max(df$date)
 ggplot(df, aes(x=date, y=diff)) +
         geom_area(alpha=0.5, color="darkred", fill="red")+
         scale_x_date()+
-        labs(title=paste0('Covid-19 susirgimų pokytis TOP5 ir Baltijos valstybėse įvedus karantiną',
-                          max.date), subtitle=" Šaltinis: corona-stat.lt", x="Data", y="Susirgimų skaičius")+
+        labs(title=paste0('Covid-19 susirgimų pokytis TOP 5 ir Baltijos valstybėse įvedus karantiną ',
+                          max.date), 
+             subtitle="Šaltinis: corona-stat.lt", 
+             x="Data", 
+             y="Susirgimų skaičius")+
         facet_wrap(~valstybe, ncol=3, scales='free_y')+
         geom_vline(data = df, mapping = aes(xintercept = diena), color="blue" , size=1.1)
 ```
@@ -912,7 +915,7 @@ ggplot(df, aes(x=date, y=values, fill=var))+
               legend.position='bottom',
               axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-
+    
 # Ekonominiai rodikliai
 
 Šioje skiltyje pristatomi naujausi ekonominiai rodikliai, kurie padeda atspindėti koronos viruso pasekmes ekonomikai.
@@ -939,6 +942,37 @@ ggplot(df, aes(x=date, y=values, fill=var))+
 
 # Prognozės
 ## Sergamumo statistikos prognozės
+
+Experimentiniai grafikai:
+
+```{r}
+
+df <- data_world_map %>%
+  filter(var=="confirmed",
+         value>=100)%>%
+  group_by(valstybe)%>%
+  arrange(date)%>%
+  mutate(index = value/value[1],
+         time_0=seq_along(along.with = date))%>%
+  filter(
+    # CNTR_CODE %in% c("CN", "IT", "DE", "KR", "ES", "IR", "JP", "EE"),
+         time_0<=40)
+
+
+ggplot(df, aes(time_0, value,  group=valstybe))+
+  geom_line()+
+  scale_y_continuous(trans = log2_trans())+
+    scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
+          labs(title="Registruotų atvejų skaičiaus raida nuo momento, kai šalyje pasiekta 100 atvejų",
+             subtitle = "Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt",
+             x="Dienos 0+t",
+             y="Skaičius (log2)")+
+        theme(legend.title=element_blank(),
+              legend.position="left",
+              axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```
 
 ![https://xkcd.com/2281/](https://imgs.xkcd.com/comics/coronavirus_research.png)
 
