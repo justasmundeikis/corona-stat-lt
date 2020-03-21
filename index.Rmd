@@ -31,7 +31,7 @@ source("./scripts/loading_R_packets.R")
 dir.create("./data/")
 source("./scripts/data_import_preparation_word.R")
 source("./scripts/data_import_preparation_word_map.R")
-source("./scripts/data_import_preparation_LT.R")
+source("./scripts/data_import_GS.R")
 ```
 
 ```{r, include=FALSE}
@@ -91,7 +91,13 @@ data_lt_county_cum <- read.csv("./data/data_lt_county_cum.csv",header = TRUE,str
   mutate(date=as.Date(date),
          var=factor(var, levels=c("confirmed","active", "recovered", "deaths")))
 
-data_lt_add <- read.csv("./data/data_lt_add.csv",header = TRUE,stringsAsFactors = FALSE)%>%
+data_lt <- read.csv("./data/data_lt.csv",header = TRUE,stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))
+
+data_lv <- read.csv("./data/data_lv.csv",header = TRUE,stringsAsFactors = FALSE)%>%
+  mutate(date=as.Date(date))
+
+data_ee <- read.csv("./data/data_ee.csv",header = TRUE,stringsAsFactors = FALSE)%>%
   mutate(date=as.Date(date))
 
 ```
@@ -260,6 +266,7 @@ ggplot(df, aes(fill=value_pop))+
 ```
 
 ## Pasaulis - kita statistika {.tabset .tabset-fade .tabset-pills}
+
 ### Susirgę, pasveikę, mirę
 ```{r, echo=FALSE}
 df <- data_world %>%
@@ -334,11 +341,12 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
   scale_x_date(breaks = "1 week")+
         theme(axis.text=element_text(size=8),
               axis.text.x=element_text(angle=45, hjust=1))
-
 ```
+
 ###Top 10 pasaulio šalių pagal mirčių skaičių
 
 ### Mirtys top 10
+
 ```{r,echo=FALSE}
 df <- data_world %>%
   filter(var=="deaths",
@@ -358,7 +366,9 @@ ggplot(df,aes(x=reorder(valstybe,-value), y=value, fill=valstybe))+
               axis.text.x=element_text(angle=45, hjust=1))
 
 ```
+
 ### Mirtingumas (top 10 pagal susirigimų skaičių)
+
 ```{r,echo=FALSE}
 df <- data_world %>%
  filter(var%in%c("deaths","confirmed"),
@@ -380,19 +390,7 @@ ggplot(df,aes(x=reorder(valstybe,-deathrate), y=deathrate, fill=valstybe))+
               axis.text.x=element_text(angle=45, hjust=1))
  
 ```
-maxdate <- max(df$date)
-df <- filter(df,date==maxdate)%>%
-        arrange(.,desc(confirmed))%>%
-        top_n(.,10, confirmed)
 
-
-ggplot(df,aes(x=valstybe, y=deathrate, fill=valstybe))+
-        geom_bar(stat='identity') +
-        geom_text(aes(label=deathrate, y=deathrate), size=2.5, vjust=-0.5)+
-        labs(x="Valstybė", y="Mirtingumas, %", title="Mirtingumas top 10 pasaulio šalių pagal susirgimų skaičių", subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt" )+
-        theme(axis.text=element_text(size=8),
-              axis.text.x=element_text(angle=45, hjust=1))
-```
 # Europos statistika
 
 ## Europa - žemėlapiai {.tabset .tabset-fade .tabset-pills}
@@ -902,9 +900,10 @@ ggplot(df, aes(fill=values_pop))+
 
 ```
 
-## Lietuva - statistika
+## Lietuva - statistika {.tabset .tabset-fade .tabset-pills}
 
 ### Bendras atvejų skaičius
+
 ```{r, echo=FALSE}
 
 df <- data_lt_county_cum%>%
@@ -929,16 +928,72 @@ ggplot(df, aes(x=date, y=values, fill=var))+
               axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+## Ištyrimai
+
 ```{r}
-
-df <- data_lt_add%>%
-  mutate(checked=round(tested_total/observed*100,1))%>%
-  .[!is.na(.$checked),]
-
-kable(df)
-
+library(formattable)
+data_lt %>%
+    na.omit()%>%
+  mutate(tested_perc=round(tested_total/observed*100,1))%>%
+  select(date, tested_perc)%>%
+  mutate(tested_perc = color_bar("lightgrey")(tested_perc))%>%
+  rename(Data=date,
+         Ištyrimų_proc=tested_perc)%>%
+  kable(escape = F,row.names = FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, 
+                position = "center")
 
 ```
+
+
+
+```{r}
+pop <- demo_r_pjangrp%>%
+  filter(NUTS_ID %in% c("LT", "LV", "EE"))%>%
+  select(NUTS_ID, pop)%>%
+  data.frame()
+
+lt <- data_lt %>%
+    select(date, tested_total)%>%
+    rename(tested_total_lt=tested_total)
+
+lv <- data_lv %>%
+    select(date, tested_total)%>%
+    rename(tested_total_lv=tested_total)
+
+ee <- data_ee %>%
+          select(date, tested_total)%>%
+          rename(tested_total_ee=tested_total)
+
+df <- merge(lt,lv)%>% merge(.,ee) %>%
+  mutate(
+  tested_total_lt_p=tested_total_lt/pop[3,2]*1000,
+  tested_total_lv_p=tested_total_lv/pop[2,2]*1000,
+  tested_total_ee_p=tested_total_ee/pop[1,2]*1000
+)%>%
+  gather(var, values, 2:7)%>%
+  mutate(case=rep(c("Skaičius", "Skaičius tenkantis 1000 gyventojų"), each=nrow(.)/2),
+         geo=rep(c("Lietuva", "Latvija", "Estija"), each=nrow(lt), times=2))
+
+ggplot(df, aes(date, values, col=geo))+
+        geom_line(size=1.1)+
+        geom_point(size=2)+
+    scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
+        labs(
+          title="Testavimo apimtis Baltijos šalyse",
+          subtitle="Šaltinis ir skaičiavimai: Corona-Stat.lt",
+          x="Laikotarpis",
+          y="Skaičius"
+          )+
+  scale_x_date(breaks = "1 week")+
+        theme(legend.position = "bottom",
+          axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))+
+  facet_wrap(~case, scales = "free_y")
+
+```
+
 # Ekonominiai rodikliai
 
 Šioje skiltyje pristatomi naujausi ekonominiai rodikliai, kurie padeda atspindėti koronos viruso pasekmes ekonomikai.

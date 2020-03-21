@@ -27,4 +27,10 @@ maxdate <- max(df$date)
                 top_n(.,10, confirmed)
 
 
+        
+df <- data_lt_add%>%
+                mutate(checked=round(tested_total/observed*100,1))%>%
+                .[!is.na(.$checked),] %>% as.data.frame()
+        
+        kable(df)       
 
