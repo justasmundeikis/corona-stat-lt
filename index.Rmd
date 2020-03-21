@@ -766,8 +766,8 @@ Naujausiais duomenimis (`r time_now`) Lietuvoje šiuo metu yra:
 
 * iš viso registruotų atvejų - `r df$confirmed `
 * iš jų pasveiko - `r df$recovered `
-* i6 jų mirė - `r df$deaths`
-* likęs aktyvių atvejų  skaičius - `r df$confirmed `
+* iš jų mirė - `r df$deaths`
+* likęs aktyvių atvejų  skaičius - `r df$active `
 
 ## Lietuva - žemėlapiai {.tabset .tabset-fade .tabset-pills}
 
