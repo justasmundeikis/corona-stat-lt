@@ -336,6 +336,7 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
               axis.text.x=element_text(angle=45, hjust=1))
 
 ```
+###Top 10 pasaulio šalių pagal mirčių skaičių
 
 ### Mirtys top 10
 ```{r,echo=FALSE}
@@ -357,7 +358,6 @@ ggplot(df,aes(x=reorder(valstybe,-value), y=value, fill=valstybe))+
               axis.text.x=element_text(angle=45, hjust=1))
 
 ```
-
 ### Mirtingumas (top 10 pagal susirigimų skaičių)
 ```{r,echo=FALSE}
 df <- data_world %>%
@@ -380,7 +380,19 @@ ggplot(df,aes(x=reorder(valstybe,-deathrate), y=deathrate, fill=valstybe))+
               axis.text.x=element_text(angle=45, hjust=1))
  
 ```
+maxdate <- max(df$date)
+df <- filter(df,date==maxdate)%>%
+        arrange(.,desc(confirmed))%>%
+        top_n(.,10, confirmed)
 
+
+ggplot(df,aes(x=valstybe, y=deathrate, fill=valstybe))+
+        geom_bar(stat='identity') +
+        geom_text(aes(label=deathrate, y=deathrate), size=2.5, vjust=-0.5)+
+        labs(x="Valstybė", y="Mirtingumas, %", title="Mirtingumas top 10 pasaulio šalių pagal susirgimų skaičių", subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt" )+
+        theme(axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))
+```
 # Europos statistika
 
 ## Europa - žemėlapiai {.tabset .tabset-fade .tabset-pills}
