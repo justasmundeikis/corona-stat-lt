@@ -1,8 +1,3 @@
-if(!require("tidyverse")) install.packages("tidyverse"); library("tidyverse")
-if(!require("lubridate")) install.packages("lubridate"); library("lubridate")
-if(!require("magrittr")) install.packages("magrittr"); library("magrittr")
-if(!require("gsheet")) install.packages("gsheet"); library("gsheet")
-
 # data import from google sheets
 URL <- "https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=0"
 data_lt <- read.csv(text=gsheet2text(URL, format = "csv"),
@@ -13,7 +8,7 @@ data_lt <- read.csv(text=gsheet2text(URL, format = "csv"),
 # transforming date to date format (needed for join opperation)
 data_lt %<>% mutate(date=as.Date(date)) 
 # creating a vectopr of date from first observation to today
-date <- data.frame(date=seq(as.Date("2020-02-28"), today(), by="1 day"))
+date <- data.frame(date=seq(as.Date("2020-02-24"), today(), by="1 day"))
 # joining 
 data_lt <- left_join(date, data_lt, by="date")
 
@@ -37,8 +32,7 @@ data_lt_county <- data_lt %>%
 write.csv(data_lt_county, "./data/data_lt_county.csv", row.names = FALSE)
 
 # creating country daily change
-data_lt_country <- data_lt %>%
-        gather(date, values, 3:ncol(.))%>%
+data_lt_country <- data_lt_county %>%
         group_by(var,date)%>%
         summarise(values=sum(values))
 
@@ -64,3 +58,22 @@ data_lt_country_cum <- data_lt_county_cum %>%
         summarise(values=sum(values))
 
 write.csv(data_lt_country_cum, "./data/data_lt_country_cum.csv", row.names = FALSE)
+
+
+# data import from google sheets
+URL <- "https://docs.google.com/spreadsheets/d/1l9HM2hIjLFA-SZy_kO8b8B5Ddr0hfVZrmx2Yb1n1feg/edit#gid=1906964200"
+data_lt <- read.csv(text=gsheet2text(URL, format = "csv"),
+                    stringsAsFactors=FALSE,
+                    na.strings = "")%>%
+        select(1:4)
+
+# transforming date to date format (needed for join opperation)
+data_lt %<>% mutate(date=as.Date(date)) 
+# creating a vectopr of date from first observation to today
+date <- data.frame(date=seq(as.Date("2020-02-24"), today(), by="1 day"))
+# joining 
+data_lt <- left_join(date, data_lt, by="date")
+
+write.csv(data_lt, "./data/data_lt_add.csv", row.names = FALSE)
+
+rm(list = ls())

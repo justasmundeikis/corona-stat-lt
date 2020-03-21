@@ -65,3 +65,28 @@ row.names(res5$osm_multipolygons)
 
 plot(quartier$geometry)
 
+
+
+
+
+
+
+```{r, include=FALSE}
+# todo
+# reikia importą zipo ir failo paėmimą iš zipo padaryt, nes dabar iš working directory ima
+
+# INFO:
+# https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-countries-2
+
+# URL <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/cultural/ne_50m_admin_0_sovereignty.zip"
+# download.file(url=URL, destfile ="./data/ne_50m_admin_0_sovereignty.zip", method = "auto")
+# unzip("./data/ne_50m_admin_0_sovereignty.zip", exdir = "./data/")
+# countries <- readOGR(dsn="./data/ne_50m_admin_0_sovereignty.shp",
+#                              encoding = "utf-8",
+#                              use_iconv = T,
+#                              verbose = FALSE,
+#                      stringsAsFactors = FALSE)
+#  countries <- st_as_sf(countries)
+#  ggplot(countries)+ geom_sf()
+
+```

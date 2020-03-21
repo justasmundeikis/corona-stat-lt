@@ -1,10 +1,3 @@
-if(!require("tidyverse")) install.packages("tidyverse"); library("tidyverse")
-if(!require("lubridate")) install.packages("lubridate"); library("lubridate")
-if(!require("magrittr")) install.packages("magrittr"); library("magrittr")
-if(!require("countrycode")) install.packages("countrycode"); library("countrycode")
-
-
-
 # JHCSSE data import
 data_confirmed <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv', stringsAsFactors = FALSE)
 data_deaths <-read.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv', stringsAsFactors = FALSE)
@@ -72,7 +65,10 @@ data_world_map <- data_confirmed %>%
         gather(key=var, value=value, -c(country, date)) %>%
         mutate(var=factor(var, levels=c("confirmed", "active", "recovered", "deaths")))%>%
         filter(country!="Cruise Ship")%>% # here change only for map
+        mutate(valstybe=countrycode(country, origin = "country.name", destination =  "cldr.short.lt",nomatch = NULL ))%>%
         mutate(CNTR_CODE=countrycode(country, origin = "country.name", destination =  "eurostat",nomatch = NULL )) 
 
 # saving data in subfolder for further usage
 write.csv(data_world_map, "./data/data_world_map.csv", row.names = FALSE)
+
+rm(list = ls())
