@@ -570,7 +570,7 @@ ggplot(df,aes(x=reorder(valstybe,value), y=value)) +
   labs(x="Valstybė", 
        y="Susirgimų skaičius", 
        title=paste0("Naujų susirgimų  skaičius per paskutinę dieną ( ", max.date, " duomenimis)"),
-       subtitle="Šaltinis: www.corona-stat.lt" )+
+       subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt" )+
    theme(legend.title=element_blank(),
         legend.position='none',
         axis.text.x=element_text(angle=45, hjust=1))
@@ -609,7 +609,7 @@ ggplot(df,aes(x=reorder(valstybe,value), y=value)) +
   labs(x="Valstybė", 
        y="Susirgimų skaičius", 
        title=paste0("Naujų susirgimų skaičius 100.000 gyventojų per paskutinę dieną ( ", max.date, " duomenimis)"),
-       subtitle="Šaltinis: JHCSSE Skaičiavimai: corona-stat.lt" )+
+       subtitle="Šaltinis: JHCSSE, Skaičiavimai: corona-stat.lt" )+
    theme(legend.title=element_blank(),
         legend.position='none',
         axis.text.x=element_text(angle=45, hjust=1))
@@ -633,7 +633,7 @@ ggplot(df,aes(x=reorder(valstybe,value), y=value)) +
            fill="steelblue")+
   geom_text(aes(label=value, y=value), size=3, vjust=-0.75)+
   labs(title=paste0("Naujų susirgimų per paskutinę dieną, % ( ", max.date, " duomenimis)"),
-       subtitle="Šaltinis: www.corona-stat.lt",
+       subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt",
        x="Valstybė", 
        y="proc. pokytis")+
    theme(legend.title=element_blank(),
@@ -658,7 +658,7 @@ df <- data_world_map %>%
 
 # čia reikia sukurti atskirą DF, geriausia google sheete ir importuot, nes reikia visoms šalims
 
-dff<-  data.frame(valstybe=c("Airija", "Austrija", "Belgija", "Čekija", "Danija", 
+dff <- data.frame(valstybe=c("Airija", "Austrija", "Belgija", "Čekija", "Danija", 
             "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lietuva", "Liuksemburgas", "Nyderlandai", "Norvegija",
             "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Vengrija", "Vokietija"),
            diena=c("2020-03-13", "2020-03-11","2020-03-18", "2020-03-16","2020-03-13", "2020-03-12","2020-03-16", "2020-03-14","2020-03-16", "2020-03-11","2020-03-11",
@@ -675,7 +675,7 @@ ggplot(df, aes(x=date, y=diff)) +
         scale_x_date()+
         labs(title=paste0('Covid-19 susirgimų pokytis TOP 5 ir Baltijos valstybėse įvedus karantiną ',
                           max.date), 
-             subtitle="Šaltinis: corona-stat.lt", 
+             subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt", 
              x="Data", 
              y="Susirgimų skaičius")+
         facet_wrap(~valstybe, ncol=3, scales='free_y')+
@@ -710,7 +710,7 @@ df <- df <- data_world_map %>%
         ggplot(df, aes(x=date, y=value, fill=var)) +
                 geom_area(alpha=0.5) +
                 labs(title=paste0("Covid-19 atvejai TOP6 Europos šalyse ( ",max.date,") duomenimis"), 
-                     subtitle=" Šaltinis: corona-stat.lt", x="Data", y="Susirgimų skaičius") +
+                     subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt", x="Data", y="Susirgimų skaičius") +
                 scale_fill_manual(values=c('red', 'green', 'black'), 
                                   labels=c("Aktyvūs","Pasveikę","Mirtys")) +
                 theme(legend.title = element_blank(),
@@ -742,7 +742,7 @@ df <- data_world_map %>%
                 geom_area(alpha=0.5, color="grey", fill="black") +
                 labs(title=paste0('Covid-19 sukeltų mirčių skaičius TOP 6 Europos valstybėse ',
                                   max.date),
-                     subtitle="Šaltinis: corona-stat.lt",
+                     subtitle="Šaltinis: JHCSSE, skaičiavimai: corona-stat.lt",
                      x="Data", y="Skaičius") +
                 theme(legend.position='bottom',
               axis.text.x=element_text(angle=45, hjust=1))+
