@@ -1013,6 +1013,30 @@ ggplot(df, aes(x=date, y=values, fill=var))+
               axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+
+
+```{r, echo=FALSE}
+
+df <- data_lt_country%>%
+    filter(var=="confirmed",
+           date>="2020-02-28")
+  
+
+max.date <- max(df$date)
+
+ggplot(df, aes(x=date, y=values, fill=var))+
+  geom_bar( stat = "identity",
+            fill="steelblue")+
+        scale_x_date(breaks="1 day")+
+        geom_text(aes(label=values, y=values), size=2.5, vjust=-0.5)+
+        labs(title=paste0("Naujų atvejų skaičius (naujausi duomenys ", max.date, ")"),
+             subtitle = "Šaltinis ir skaičiavimai: Corona-Stat.lt",
+             x="Data",
+             y="Skaičius")+
+        theme(legend.title=element_blank(),
+              legend.position='bottom',
+              axis.text.x = element_text(angle = 45, hjust = 1))
+```
 ## Ištyrimai
 
 Žemiau lentelėje pateikiamas santykis tarp atliktų testų bei stebimų asmenų. Duomenų šaltinis SAM. Deje neturime pilnos informacijos visoms dienoms, neaišku, kiek iš altiktų testų yra altikti pakartotini testai, taip pat ebėjonių kelia paskutines dienas nedidėjęs stebimų asmenų (kurie potencialiai turėjo kontaktą su koronoviruso nešiotojais) skaičius. Todėl tikėtina, jog ypatingai paskutinių dienų ištyrimų statistika yra klaidinga (per duag optimistinė).
