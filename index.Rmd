@@ -1015,7 +1015,7 @@ ggplot(df, aes(x=date, y=values, fill=var))+
 
 ## Ištyrimai
 
-Žemiau lentelėje pateikiamas santykis tarp atliktų testų bei stebimų asmenų. Duomenų šaltinis SAM. Deje neturime pilnos informacijos visoms dienoms, neaišku, kiek iš altiktų testų yra altikti pakartotini testai, taip pat ebėjonių kelia paskutines dienas nedidėjęs stebimų asmenų (kurie potencialiai turėjo kontaktą su koronoviruso nešiotojais) skaičius. Todėl tikėtina, jog ypatingai paskutinių dienų ištyrimų statistika yra klaidinga (per duag optimistinė).
+Žemiau lentelėje pateikiamas santykis tarp atliktų testų bei stebimų asmenų. Duomenų šaltinis SAM. Deja neturime pilnos informacijos visoms dienoms, neaišku, kiek iš atliktų testų yra atlikti pakartotiniai testai, taip pat abejonių kelia paskutines dienas nedidėjęs stebimų asmenų (kurie potencialiai turėjo kontaktą su koronaviruso nešiotojais) skaičius. Todėl tikėtina, jog ypatingai paskutinių dienų ištyrimų statistika yra klaidinga (per daug optimistinė).
 
 ```{r}
 data_lt %>%
