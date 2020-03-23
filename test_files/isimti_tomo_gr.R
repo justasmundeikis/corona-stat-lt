@@ -84,3 +84,41 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
 
 ```
 
+### Susirgimų/pasveikimų/mirčių santykis
+
+```{r, echo=FALSE}
+df <- df <- data_world_map %>%
+        mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed")))%>%
+        filter(valstybe%in%c("Airija", "Austrija", "Belgija", "Bulgarija", "Čekija", "Danija", 
+                             "JK", "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lichtenšteinas", "Lietuva", "Liuksemburgas", 
+                             "Malta", "Nyderlandai", "Norvegija", "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Švedija", "Vengrija", "Vokietija"), var=="confirmed") %>%
+        spread(date, value)%>%
+        arrange(desc(.[,ncol(.)]))%>%
+        .[1:6,]%>%
+        gather(date, value, 5:ncol(.))%>%
+        mutate(date=as.Date(date))%>%
+        select(valstybe, date, value, var)
+
+names<-as.vector(unique(df$valstybe))
+max.date<-max(df$date)
+
+df <- read.csv("./data/data_world.csv",
+               stringsAsFactors = FALSE)%>%
+        mutate(date=as.Date(date))%>%
+        mutate(var=factor(var, levels=c("active", "recovered", "deaths", "confirmed"))) %>% 
+        filter(valstybe%in%names, var!="confirmed")%>%
+        select(valstybe, date, value, var)%>%
+        group_by(valstybe)
+
+ggplot(df, aes(x=date, y=value, fill=var)) +
+        geom_area(alpha=0.5) +
+        labs(title=paste0("Covid-19 atvejai TOP6 Europos šalyse ( ",max.date,") duomenimis"), 
+             subtitle="Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt", x="Data", y="Susirgimų skaičius") +
+        scale_fill_manual(values=c('red', 'green', 'black'), 
+                          labels=c("Aktyvūs","Pasveikę","Mirtys")) +
+        theme(legend.title = element_blank(),
+              legend.position='bottom',
+              axis.text.x=element_text(angle=45, hjust=1)) +
+        facet_wrap(~valstybe, ncol=3, scales='free_y', nrow=2)
+
+```
