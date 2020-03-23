@@ -1,4 +1,4 @@
-  ---
+---
 title: "Corona-Stat.lt"
 output:
   html_document:
@@ -32,6 +32,7 @@ dir.create("./data/")
 source("./scripts/data_import_preparation_word.R")
 source("./scripts/data_import_preparation_word_map.R")
 source("./scripts/data_import_GS.R")
+source("./scripts/vmi.R")
 ```
 
 ```{r, include=FALSE}
@@ -100,8 +101,12 @@ data_lv <- read.csv("./data/data_lv.csv",header = TRUE,stringsAsFactors = FALSE)
 data_ee <- read.csv("./data/data_ee.csv",header = TRUE,stringsAsFactors = FALSE)%>%
   mutate(date=as.Date(date))
 
+vmi <- read_excel("./data/vmi.xlsx")%>%
+        na.omit()
+
 ```
 
+**Naujausias update: `r format(Sys.time(), "%Y-%m-%d %H:%M")`**
 
 # Info
 
@@ -1046,7 +1051,6 @@ data_lt %>%
     na.omit()%>%
   mutate(tested_perc=round(tested_total/observed*100,1))%>%
   select(date,tested_total, observed, tested_perc)%>%
-  mutate(tested_perc = color_bar("lightgrey")(tested_perc))%>%
   rename(Data=date,
          "Atlitka testų"=tested_total,
          "Stebimų asm. skaičius"=observed,
@@ -1113,8 +1117,87 @@ ggplot(df, aes(date, values, col=geo))+
 
 
 # Ekonominiai rodikliai
+Kai tik atsiras statistiniai rodikliai, pradėsije juos pildyti šioje skiltyje. Šiuo metu tiek Lietuvoje, tiek visame pasaulyje ekonomistai, ekonometrikai, analitikai ir kas tik netingi išreiškia koiekybines prognozes. Deja jos visos remiasi išimtinai prielaidomis, o ne faktais. Kiekybiškai įvertinti koronaviruso sukeliamos pasaulinės recesijos šiuo metu dar nėra įmanoma. 
 
-Šioje skiltyje pristatomi naujausi ekonominiai rodikliai, kurie padeda atspindėti koronos viruso pasekmes ekonomikai.
+## VMI paskelbtas įmonių sąrašas
+Nežinau ar dėl to, jog mes (ir tikiu ne tik mes) palaidome robotukus nuskaityti vmi.lt tinklapyje esančią informaciją, 2020-03-23 VMI paviešino įmonių, kurios mokesčiams sumokėti arba mokestinės paskolos sutarčiai, be palūkanų sudaryti, turės du mėnesius, [sąrašą](https://www.vmi.lt/cms/informacija-verslui-del-covid-19). Saraše - `r nrow(vmi)` įmonės. Pagal šį sudarytą sąrašą galiem vertinti, kokios įmonės (VMI supratimu) susidurs su ekonominiais sunkumais. 
+
+Pagrindinės įžvalgos (bus pildoma)
+
+```{r}
+df <- vmi %>%
+  select(`EV sekcija`)%>%
+  group_by(`EV sekcija`)%>%
+  summarise(Skaičius=n())%>%
+  arrange(desc(Skaičius))
+
+ggplot(df, aes(reorder(`EV sekcija`, Skaičius), Skaičius))+
+  geom_bar(stat = "identity",
+           fill="steelblue")+
+  coord_flip()+
+  geom_text(aes(label=Skaičius, y=Skaičius), size=2.5, hjust=-0.1)+
+        labs(title="VMI įmonių sąrašas pagal ekonominės veiklos sekcijas", 
+                       subtitle="Šaltinis: vmi.lt, skaičiavimai: Corona-Stat.lt",
+             x="EV skyrius", y="Įmonių skaičius")+
+        theme(legend.title=element_blank(),
+              legend.position="",
+              axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))
+
+
+
+```
+
+
+```{r}
+df <- vmi %>%
+  select(`EV skyrius`)%>%
+  group_by(`EV skyrius`)%>%
+  summarise(Skaičius=n())%>%
+  arrange(desc(Skaičius))
+
+ggplot(df, aes(reorder(`EV skyrius`, Skaičius), Skaičius))+
+  geom_bar(stat = "identity",
+           fill="steelblue")+
+  coord_flip()+
+  geom_text(aes(label=Skaičius, y=Skaičius), size=2.5, hjust=-0.1)+
+        labs(title="VMI įmonių sąrašas pagal ekonominės veiklos skyrius", 
+                       subtitle="Šaltinis: vmi.lt, skaičiavimai: Corona-Stat.lt",
+             x="EV skyrius", y="Įmonių skaičius")+
+        theme(legend.title=element_blank(),
+              legend.position="",
+              axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))
+
+
+
+```
+
+```{r}
+df <- vmi %>%
+  select(`JA teisinė forma`)%>%
+  group_by(`JA teisinė forma`)%>%
+  summarise(Skaičius=n())%>%
+  arrange(desc(Skaičius))
+
+ggplot(df, aes(reorder(`JA teisinė forma`, Skaičius), Skaičius))+
+  geom_bar(stat = "identity",
+           fill="steelblue")+
+  coord_flip()+
+  geom_text(aes(label=Skaičius, y=Skaičius), size=2.5, hjust=-0.1)+
+        labs(title="VMI įmonių sąrašas pagal įmonių teisinę formą", 
+                       subtitle="Šaltinis: vmi.lt, skaičiavimai: Corona-Stat.lt",
+             x="Teisinė forma", y="Įmonių skaičius")+
+        theme(legend.title=element_blank(),
+              legend.position="",
+              axis.text=element_text(size=8),
+              axis.text.x=element_text(angle=45, hjust=1))
+
+```
+
+Artimiausiu metu bus pateikta daugiau įžvalgų iš VMI duomenų...
+
+
 
 
 ## Lietuva{.tabset .tabset-fade .tabset-pills}

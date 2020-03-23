@@ -11,4 +11,5 @@ if(!require("rgdal")) install.packages("rgdal"); library("rgdal") # reading shap
 if(!require("sf")) install.packages("sf"); library("sf") #for work with shapes (shape to table)
 if(!require("countrycode")) install.packages("countrycode"); library("countrycode") #for work with shapes
 #if(!require("osmdata")) install.packages("osmdata"); library("osmdata") # for shape import LT county data
-if(!require("formattable")) install.packages("formattable"); library("formattable") #for work with shapes
+#if(!require("formattable")) install.packages("formattable"); library("formattable") #for work with shapes
+if(!require("readxl")) install.packages("readxl"); library("readxl") #for work with shapes
