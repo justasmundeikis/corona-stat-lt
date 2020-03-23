@@ -431,7 +431,7 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
               axis.text.x=element_text(angle=45, hjust=1))
 ```
 
-###Top 10 pasaulio šalių pagal mirčių skaičių
+### Top 10 pasaulio šalių pagal mirčių skaičių
 
 ### Mirtys top 10
 
@@ -714,7 +714,7 @@ max.date<-max(df$date)
 df <- df %>%
   filter(date==max.date-1|date==max.date)%>%
   spread(date, value)%>%
-  mutate(value=round(.[,6]/.[,5]*100),0)
+  mutate(value=round((.[,6]/.[,5]-1)*100),0)
 
 ggplot(df,aes(x=reorder(valstybe,value), y=value)) +
   geom_bar(stat='identity',
