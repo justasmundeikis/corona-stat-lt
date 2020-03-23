@@ -145,8 +145,7 @@ Tinklapis vis dar tebėra rengiamas, todėl galimi laikini sutrkimai. Tinklapio 
 Žemiau pateikiama atrinkta statistika, kuri leidžia geriau įvertinti coronos viruso paplitimą pasaulyje.
 
 ## Pasaulis - žemėlapiai{.tabset .tabset-fade .tabset-pills}
-
-### Patvirtinti atvejai (abs.)
+### Užsikrėtimai (abs.)
 ```{r, echo=FALSE}
 df <- data_world_map %>%
   filter(var=="confirmed",
@@ -176,7 +175,7 @@ ggplot(df, aes(fill=value))+
 
 ```
 
-### Patvirtinti atvejai (/pop.)
+### Užsikrėtimai (/pop.)
 ```{r, echo=FALSE}
 df <- data_world_map %>%
   filter(var=="confirmed",
@@ -208,7 +207,7 @@ ggplot(df, aes(fill=value_pop))+
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt")
 ```
 
-### Aktyvūs atvejai (abs.)
+### Aktyvūs (abs.)
 ```{r, echo=FALSE}
 df <- data_world_map %>%
   filter(var=="active",
@@ -238,7 +237,7 @@ ggplot(df, aes(fill=value))+
 
 ```
 
-### Aktyvūs atvejai (/pop.)
+### Aktyvūs (/pop.)
 ```{r, echo=FALSE}
 df <- data_world_map %>%
   filter(var=="active",
@@ -270,7 +269,7 @@ ggplot(df, aes(fill=value_pop))+
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt")
 ```
 
-### Nauji atvejai (abs.)
+### Nauji (abs.)
 ```{r, echo=FALSE}
 df <- data_world_map%>%
   filter(var=="confirmed",
@@ -311,7 +310,7 @@ ggplot(df, aes(fill=value))+
 ```
 
 
-### Nauji atvejai (proc.)
+### Nauji (proc.)
 ```{r, echo=FALSE}
 df <- data_world_map%>%
   filter(var=="confirmed",
@@ -353,8 +352,9 @@ ggplot(df, aes(fill=value))+
 
 ```
 
-## Pasaulis - kita statistika
-### Bendras atvejų skaičius
+
+## Pasaulis - statistika
+
 ```{r, echo=FALSE}
 df <- data_world %>%
   filter(var!="confirmed")%>%
@@ -378,8 +378,11 @@ ggplot(df, aes(x=date, y=value, fill=var))+
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-## Užsikrėtimai {.tabset .tabset-fade .tabset-pills}
-### Užsikrėtimai (top 5)
+
+### Užsikrėtimų suminiai rodikliai {.tabset .tabset-fade .tabset-pills}
+#### Užsikrėtimai (abs.)
+#### Užsikrėtimai (/pop.)
+#### Užsikrėtimai (top 5)
 ```{r, echo=FALSE}
 df <- data_world %>%
   filter(var=="confirmed")%>%
@@ -406,7 +409,7 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
 ```
 
 
-### Užsikrėtimai (top 10 be Kinijos)
+#### Užsikrėtimai (top 10 be Kinijos)
 ```{r, echo=FALSE}
 df <- data_world %>%
   filter(var=="confirmed")%>%
@@ -431,8 +434,14 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
         axis.text.x=element_text(angle=45, hjust=1))
 ```
 
-## Mirtys 
-### Suminiai rodikliai {.tabset .tabset-fade .tabset-pills}
+
+### Užsikrėtimų per paskutinę parą {.tabset .tabset-fade .tabset-pills}
+#### Užsikrėtimai (abs.)
+#### Užsikrėtimai (/pop.)
+#### Užsikrėtimai (proc.)
+#### Top 6 valstybės
+
+### Mirčių suminiai rodikliai {.tabset .tabset-fade .tabset-pills}
 #### Mirtys (abs.)
 #### Mirtys (/pop)
 #### Mirtys (top 20)
@@ -460,7 +469,8 @@ ggplot(df,aes(x=reorder(valstybe,-deathrate), y=deathrate, fill=valstybe))+
 
 ```
 
-### Per paskutinę parą {.tabset .tabset-fade .tabset-pills}
+
+### Mirtys per paskutinę parą {.tabset .tabset-fade .tabset-pills}
 #### Mirtys (abs.)
 
 ```{r, echo=FALSE}
@@ -563,10 +573,11 @@ ggplot(df,aes(x=reorder(valstybe,-value), y=value, fill=valstybe))+
 
 ```
 
+
 # Europos statistika
 
 ## Europa - žemėlapiai {.tabset .tabset-fade .tabset-pills}
-### Patvirtinti atvejai (abs.)
+### Užsikrėtimai (abs.)
 ```{r, echo=FALSE}
 df <- data_world_map %>%
   filter(var=="confirmed",
@@ -599,7 +610,7 @@ ggplot(df, aes(fill=value))+
 
 ```
 
-### Patvirtinti atvejai (/pop.)
+### Užsikrėtimai (/pop.)
 ```{r, echo=FALSE}
 df <- data_world_map %>%
   filter(var=="confirmed",
@@ -632,7 +643,7 @@ ggplot(df, aes(fill=value_pop))+
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt")
 ```
 
-### Aktyvūs atvejai (abs.)
+### Aktyvūs (abs.)
 ```{r, echo=FALSE}
 df <- data_world_map %>%
   filter(var=="active",
@@ -663,7 +674,7 @@ ggplot(df, aes(fill=value))+
 
 ```
 
-### Aktyvūs atvejai (/pop.)
+### Aktyvūs (/pop.)
 ```{r, echo=FALSE}
 df <- data_world_map %>%
   filter(var=="active",
@@ -697,7 +708,7 @@ ggplot(df, aes(fill=value_pop))+
        subtitle = "Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt")
 ```
 
-### Nauji atvejai (abs.)
+### Nauji (abs.)
 
 ```{r, echo=FALSE}
 df <- data_world_map%>%
@@ -740,7 +751,7 @@ ggplot(df, aes(fill=value))+
 ```
 
 
-### Nauji atvejai (proc.)
+### Nauji (proc.)
 
 ```{r, echo=FALSE}
 df <- data_world_map%>%
@@ -784,8 +795,9 @@ ggplot(df, aes(fill=value))+
 
 ```
 
-## Europa - kita statistika
-### Bendras atvejų skaičius
+
+## Europa - statistika
+Bendras atvejų skaičius
 ```{r, echo=FALSE}
 df <- data_world %>%
   filter(var!="confirmed",
@@ -812,7 +824,15 @@ ggplot(df, aes(x=date, y=value, fill=var))+
 ```
 
 
-### Nauji užsikrėtimai  {.tabset .tabset-fade .tabset-pills}
+
+
+### Užsikrėtimų suminiai rodikliai {.tabset .tabset-fade .tabset-pills}
+#### Užsikrėtimai (abs.)
+#### Užsikrėtimai (/pop.)
+#### Užsikrėtimai (xxx)
+#### Užsikrėtimai (xxx)
+
+### Užsikrėtimų per paskutinę parą {.tabset .tabset-fade .tabset-pills}
 #### Užsikrėtimai (abs.)
 
 ```{r, echo=FALSE}
@@ -939,14 +959,38 @@ ggplot(df, aes(x=date, y=diff)) +
 ```
 
 
-## Mirtys 
-### Suminiai rodikliai {.tabset .tabset-fade .tabset-pills}
+### Mirčių suminiai rodikliai {.tabset .tabset-fade .tabset-pills}
 #### Mirtys (abs.)
 #### Mirtys (/pop)
 #### Mirtys (top 20)
-#### Mirtingumas (top 20)s}
+#### Mirtingumas
+```{r,echo=FALSE}
+df <- data_world %>%
+  filter(var%in%c("deaths","confirmed"),
+         CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH"),
+         date==max(date))%>%
+  spread(var,value)%>%
+  mutate(deathrate=deaths/confirmed*100)%>%
+  mutate_at(vars(deathrate),funs(round(.,2)))%>%
+  arrange(deaths)%>%
+  top_n(.,20, confirmed)
 
-### Per paskutinę parą{.tabset .tabset-fade .tabset-pills}
+ggplot(df,aes(x=reorder(valstybe,-deathrate), y=deathrate, fill=valstybe))+
+  geom_bar(stat='identity',
+           fill="steelblue") +
+  geom_text(aes(label=deathrate, y=deathrate), size=2.5, vjust=-0.5)+
+  labs(x="Valstybė", y="Mirtingumas, %", title="Mirtingumas EEE valstybėse", subtitle="Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt" )+
+  theme(legend.title=element_blank(),
+        legend.position="",
+        axis.text=element_text(size=8),
+        axis.text.x=element_text(angle=45, hjust=1))
+
+```
+
+
+
+
+### Mirtys per paskutinę parą {.tabset .tabset-fade .tabset-pills}
 #### Mirtys (abs.)
 
 ```{r, echo=FALSE}
@@ -1041,30 +1085,6 @@ ggplot(df,aes(x=reorder(valstybe,value), y=value)) +
 ```
 
 
-#### Mirtingumas
-```{r,echo=FALSE}
-df <- data_world %>%
-  filter(var%in%c("deaths","confirmed"),
-         CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH"),
-         date==max(date))%>%
-  spread(var,value)%>%
-  mutate(deathrate=deaths/confirmed*100)%>%
-  mutate_at(vars(deathrate),funs(round(.,2)))%>%
-  arrange(deaths)%>%
-  top_n(.,20, confirmed)
-
-ggplot(df,aes(x=reorder(valstybe,-deathrate), y=deathrate, fill=valstybe))+
-  geom_bar(stat='identity',
-           fill="steelblue") +
-  geom_text(aes(label=deathrate, y=deathrate), size=2.5, vjust=-0.5)+
-  labs(x="Valstybė", y="Mirtingumas, %", title="Mirtingumas EEE valstybėse", subtitle="Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt" )+
-  theme(legend.title=element_blank(),
-        legend.position="",
-        axis.text=element_text(size=8),
-        axis.text.x=element_text(angle=45, hjust=1))
-
-```
-
 #### Top 6 valstybės
 ```{r, echo=FALSE}
 df <- data_world %>%
@@ -1098,6 +1118,7 @@ ggplot(df, aes(x=date, y=diff)) +
 
 
 
+
 # Lietuva
 ```{r}
 df <- data_lt_country_cum %>%
@@ -1117,7 +1138,7 @@ Naujausiais duomenimis (`r time_now`) Lietuvoje šiuo metu yra:
 
 Deja SAM neskelbia detalios informacijos apie pacientų gyvenamąją vietą, todėl žemiau patiekti žemėlapiai remiasi mūsų surinkta informacija iš įvairių šaltinių: SAM, žiniasklaidos, ligoninių bei kitų pranešimų. Todėl skaičiuse galima paklaida.
 
-### Patvirtinti atvejai
+### Užsikrėtimai (abs.)
 ```{r, echo=FALSE}
 df <- data_lt_county_cum%>%
   filter(var=="confirmed",
@@ -1150,7 +1171,7 @@ ggplot(df, aes(fill=values))+
 
 ```
 
-### Patvirtinti atvejai / pop
+### Užsikrėtimai (/pop.)
 ```{r, echo=FALSE}
 df <- data_lt_county_cum%>%
   filter(var=="confirmed",
@@ -1183,7 +1204,7 @@ ggplot(df, aes(fill=values_pop))+
 ```
 
 
-### Aktyvūs atvejai
+### Aktyvūs (abs.)
 ```{r, echo=FALSE}
 df <- data_lt_county_cum%>%
   filter(var=="active",
@@ -1216,7 +1237,9 @@ ggplot(df, aes(fill=values))+
 ```
 
 
-### Aktyvūs atvejai / pop
+### Aktyvūs (/pop.)
+### Nauji (abs.)
+### Nauji (proc.)
 
 ```{r, echo=FALSE}
 df <- data_lt_county_cum%>%
@@ -1300,6 +1323,7 @@ ggplot(df, aes(x=date, y=values, fill=var))+
         legend.position='bottom',
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+
 ## Ištyrimai
 
 Žemiau lentelėje pateikiamas santykis tarp atliktų testų bei stebimų asmenų. Duomenų šaltinis SAM. Deja neturime pilnos informacijos visoms dienoms, neaišku, kiek iš atliktų testų yra atlikti pakartotiniai testai, taip pat abejonių kelia paskutines dienas nedidėjęs stebimų asmenų (kurie potencialiai turėjo kontaktą su koronaviruso nešiotojais) skaičius. Todėl tikėtina, jog ypatingai paskutinių dienų ištyrimų statistika yra klaidinga (per daug optimistinė).
