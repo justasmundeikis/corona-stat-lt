@@ -6,7 +6,7 @@
 # Date_modification
 
 data=$(date +"%m-%d-%Y %H:%M")
-echo $(started $data)
+echo "started $data"
 
 git pull
 Rscript -e "rmarkdown::render('index.Rmd')"
