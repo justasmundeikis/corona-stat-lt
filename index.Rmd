@@ -126,7 +126,7 @@ Aptikus netikslumų arba turint klausimų bei pasiūlymų galite kreiptis el. pa
 
 Šiame tinklapyje pateikiami apibendrinti statistiniai rodikliai, kurie remiasi 
 
-* John Hopkins CSSE ([link](https://github.com/CSSEGISandData/COVID-19)) renkama pasauline statistika
+* John Hopkins CSSE ([link](https://github.com/CSSEGISandData/COVID-19)) renkama pasauline statistika. Pastaba: nuo 2020-03-24 dienos JHSCSSE nebeteikia *pasveikusiųjų* statistikos, dėl mažo tokio rodiklio patikimumo, atitinkamai pasikeitė ir šiame tinklapyje pristatoma statistika.
 * Mūsų komandos renkama Lietuvos statistika
 * Kitais šaltiniais - Eurostat, Lietuvos statistikos departamento, Lietuvos Banko bei kt.
 
