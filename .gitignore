@@ -3,5 +3,3 @@
 .RData
 .Ruserdata
 data/*.csv
-!data/osp/*
-!data/entso/*
