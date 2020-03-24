@@ -1603,7 +1603,7 @@ Kurį laiką Junktinės Karalystės valdžia tikėjosi, jog galime leisti sirgti
 
 Žemiau lentelėje mes nusprendėme paskaičiuoti, kas nutiktų, jeigu Lietuvoje būtų siekiama leisti persirgti visiems.  Skaičiavimams naudojome [Kinijos Užkrečiamių ligų kontrolės ir prevencijos centro pateiktą statistiką apie mirtingumą susirgus](http://weekly.chinacdc.cn/en/article/id/e53946e2-c6c4-41e9-9a9b-fea8db1a8f51), bei Lietuvos Statistikos departamento duomenis apie 2020 metų gyventojų sudėtį savivaldybėse pagal amžiaus grupes.
 
-Pateikiami 10 scenarijų, kai persarga nuo 10 iki 100 % populiacijos. Įvairiais medikų pasisakymais, bandos imuniteto ("herd-immunity"), būtų galima pasiekti, kai perserga bent 60 % populiacijos. Tad laikytume tai, baziniu scneraijumi. Išvadadas siulome pasidaryti patiems. Kiekvienos savivaldybės įverčius rasite priede [excel file](corona-stat.lt/data/osp/e_table_risk_county.xlsx)
+Pateikiami 10 scenarijų, kai persarga nuo 10 iki 100 % populiacijos. Įvairiais medikų pasisakymais, bandos imuniteto ("herd-immunity"), būtų galima pasiekti, kai perserga bent 60 % populiacijos. Tad laikytume tai, baziniu scneraijumi. Išvadadas siulome pasidaryti patiems. Kiekvienos savivaldybės įverčius rasite priede [excel file](https://github.com/justasmundeikis/corona-stat-lt/blob/master/data/osp/e_table_risk_county.xlsx)
 
 ```{r}
 kable(table_risk_agg)%>%
