@@ -99,6 +99,10 @@ data_ee <- read.csv("./data/data_ee.csv",header = TRUE,stringsAsFactors = FALSE)
 vmi <- read_excel("./data/vmi.xlsx")%>%
   na.omit()
 
+
+table_risk_agg <- read.csv("./data/osp/table_risk_agg.csv", stringsAsFactors = FALSE)
+table_risk_age_group <- read.csv("./data/osp/table_risk_age_group.csv", stringsAsFactors = FALSE)
+
 ```
 
 # Info
@@ -1592,6 +1596,29 @@ ggplot(df, aes(date, values, col=geo))+
 ```
 
 ## Rizikos statistika
+
+### "Leiskime persirgti"?
+
+Kurį laiką Junktinės Karalystės valdžia tikėjosi, jog galime leisti sirgti visiems, tam, jog persirgę asmenys įgytų įmunitetą koronavirusui. Visgi, kai JK premjeras B. Johnson buvo supažindintas su galimomis pasekmėmis (mirčių skaičiumi), JK ėmėsi prieminių kaip riboti viruso plitimą. 
+
+Žemiau lentelėje mes nusprendėme paskaičiuoti, kas nutiktų, jeigu Lietuvoje būtų siekiama leisti persirgti visiems.  Skaičiavimams naudojome [Kinijos Užkrečiamių ligų kontrolės ir prevencijos centro pateiktą statistiką apie mirtingumą susirgus](http://weekly.chinacdc.cn/en/article/id/e53946e2-c6c4-41e9-9a9b-fea8db1a8f51), bei Lietuvos Statistikos departamento duomenis apie 2020 metų gyventojų sudėtį savivaldybėse pagal amžiaus grupes.
+
+Pateikiami 10 scenarijų, kai persarga nuo 10 iki 100 % populiacijos. Įvairiais medikų pasisakymais, bandos imuniteto ("herd-immunity"), būtų galima pasiekti, kai perserga bent 60 % populiacijos. Tad laikytume tai, baziniu scneraijumi. Išvadadas siulome pasidaryti patiems. Kiekvienos savivaldybės įverčius rasite priede [excel file](corona-stat.lt/data/osp/e_table_risk_county.xlsx)
+
+```{r}
+kable(table_risk_agg)%>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),full_width = F,fixed_thead = T)
+```
+
+
+```{r}
+kable(table_risk_age_group)%>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),full_width = F,fixed_thead = T)
+
+```
+
+
+
 
 ## Medicinos pajėgumai
 
