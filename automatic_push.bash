@@ -6,7 +6,7 @@
 # Date_modification
 
 data=$(date +"%m-%d-%Y %H:%M");
-echo "started $data">> /home/pi/list_log.txt;
+echo "started $(date)">> /home/pi/list_log.txt;
 echo $(pwd) >>/home/pi/list_log.txt;
 
 git pull;
@@ -15,4 +15,4 @@ git add .;
 git commit -m "automatic update $data";
 git push origin master;
 
-echo "finished $(date)">> /ome/pi/list_log.txt
+echo "finished $(date)">> /home/pi/list_log.txt
