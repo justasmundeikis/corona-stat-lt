@@ -2,6 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-data/*
+data/*.csv
 !data/osp/*
 !data/entso/*
