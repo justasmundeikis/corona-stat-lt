@@ -5,7 +5,6 @@
 # Date_creation
 # Date_modification
 
-cd /home/pi/corona-stat-lt/
 data=$(date +"%m-%d-%Y %H:%M");
 echo "started $data">> /home/pi/list_log.txt;
 echo $(pwd) >>/home/pi/list_log.txt;
