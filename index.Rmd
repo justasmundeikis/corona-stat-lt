@@ -342,13 +342,13 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
 ```
 
 
-#### Užsikrėtimai (ts, top 10 be Kinijos)
+#### Užsikrėtimai (ts, top 6-16 vietos)
 ```{r, echo=FALSE}
 df <- data_world %>%
   filter(var=="confirmed")%>%
   spread(date, value)%>%
   arrange(desc(.[,ncol(.)]))%>%
-  .[2:11,]%>%
+  .[6:16,]%>%
   gather(date, value, 5:ncol(.))%>%
   mutate(date=as.Date(date))
 
@@ -357,7 +357,7 @@ ggplot(df, aes(x=date, y=value, color=valstybe, group=valstybe)) +
   geom_point(size=2)+
   scale_color_brewer(palette="Paired",type = "qualitative", name="Valstybės")+
   labs(
-    title="Užsikrėtimų skaičius daugiausia patvirtintų atvejų turinčiose pasaulio šalyse",
+    title="Užsikrėtimų skaičius daugiausia patvirtintų atvejų turinčiose pasaulio šalyse (6-16 vietos)",
     subtitle="Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt",
     x="Laikotarpis",
     y="Užsikrėtimų skaičius"
@@ -1242,35 +1242,6 @@ ggplot(df,aes(x=reorder(valstybe,-value), y=value)) +
         axis.text.x=element_text(angle=45, hjust=1))
 ```
 
-
-
-
-
-#### Mirtingumas
-
-```{r,echo=FALSE}
-df <- data_world %>%
-  filter(var%in%c("deaths","confirmed"),
-         CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH"),
-         date==max(date))%>%
-  spread(var,value)%>%
-  mutate(deathrate=deaths/confirmed*100)%>%
-  mutate_at(vars(deathrate),funs(round(.,2)))%>%
-  arrange(deaths)%>%
-  top_n(.,20, confirmed)
-
-ggplot(df,aes(x=reorder(valstybe,-deathrate), y=deathrate, fill=valstybe))+
-  geom_bar(stat='identity',
-           fill="steelblue") +
-  geom_text(aes(label=deathrate, y=deathrate), size=2.5, vjust=-0.5)+
-  labs(x="Valstybė", y="Mirtingumas, %", title="Mirtingumas EEE valstybėse", subtitle="Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt" )+
-  theme(legend.title=element_blank(),
-        legend.position="",
-        axis.text=element_text(size=8),
-        axis.text.x=element_text(angle=45, hjust=1))
-
-```
-
 #### Mirtys (proc, d/d)
 
 ```{r, echo=FALSE}
@@ -1296,6 +1267,31 @@ ggplot(df,aes(x=reorder(valstybe,-value), y=value)) +
   theme(legend.title=element_blank(),
         legend.position='none',
         axis.text.x=element_text(angle=45, hjust=1))
+```
+
+#### Mirtingumas
+
+```{r,echo=FALSE}
+df <- data_world %>%
+  filter(var%in%c("deaths","confirmed"),
+         CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO","CH"),
+         date==max(date))%>%
+  spread(var,value)%>%
+  mutate(deathrate=deaths/confirmed*100)%>%
+  mutate_at(vars(deathrate),funs(round(.,2)))%>%
+  arrange(deaths)%>%
+  top_n(.,20, confirmed)
+
+ggplot(df,aes(x=reorder(valstybe,-deathrate), y=deathrate, fill=valstybe))+
+  geom_bar(stat='identity',
+           fill="steelblue") +
+  geom_text(aes(label=deathrate, y=deathrate), size=2.5, vjust=-0.5)+
+  labs(x="Valstybė", y="Mirtingumas, %", title="Mirtingumas EEE valstybėse", subtitle="Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt" )+
+  theme(legend.title=element_blank(),
+        legend.position="",
+        axis.text=element_text(size=8),
+        axis.text.x=element_text(angle=45, hjust=1))
+
 ```
 
 #### Mirtys (ts, top 6)
@@ -1349,135 +1345,6 @@ Naujausiais duomenimis (`r time_now`) Lietuvoje šiuo metu yra:
 
 Deja SAM neskelbia detalios informacijos apie pacientų gyvenamąją vietą, todėl žemiau patiekti žemėlapiai remiasi mūsų surinkta informacija iš įvairių šaltinių: SAM, žiniasklaidos, ligoninių bei kitų pranešimų. Todėl skaičiuse galima paklaida.
 
-### Užsikrėtimai (abs.)
-
-```{r, echo=FALSE}
-df <- data_lt_county_cum%>%
-  filter(var=="confirmed",
-         date==max(date))%>%
-  left_join(.,demo_r_pjangrp, by="NUTS_ID") %>%
-  mutate(values_pop=values/pop*100000)
-
-df <- left_join(EU_shape, df, by="NUTS_ID")
-
-min <- round(min(df$values, na.rm = T),1)
-max <- round(max(df$values, na.rm = T),1)
-
-my_breaks <- c(min,2,5, 12 ,max)
-
-ggplot(df, aes(fill=values))+
-  geom_sf()+
-  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
-                       name="Skaičius",
-                       trans="log",
-                       na.value = "grey100",
-                       breaks=my_breaks,
-                       labels=my_breaks)+
-  geom_sf_label(aes(label =round(values,0)), size=5, fill="white" )+
-  labs(title=paste0("Visi patvirinti atvejai (duomenys ",max.date,")"),
-       subtitle = "Šaltinis ir skaičiavimai: Corona-Stat.lt",
-       x="",
-       y="")
-
-```
-
-### Užsikrėtimai (/pop.)
-```{r, echo=FALSE}
-df <- data_lt_county_cum%>%
-  filter(var=="confirmed",
-         date==max(date))%>%
-  left_join(.,demo_r_pjangrp, by="NUTS_ID") %>%
-  mutate(values_pop=values/pop*100000)
-
-
-df <- left_join(EU_shape, df, by="NUTS_ID")
-
-min <- round(min(df$values_pop, na.rm = T),1)
-max <- round(max(df$values_pop, na.rm = T),1)
-
-my_breaks <- c(min, 1.5, 2.5 ,max)
-
-ggplot(df, aes(fill=values_pop))+
-  geom_sf()+
-  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
-                       name="Skaičius",
-                       trans="log",
-                       na.value = "grey100",
-                       breaks=my_breaks,
-                       labels=my_breaks)+
-  geom_sf_label(aes(label =round(values_pop,0)), size=5, fill="white" )+
-  labs(title=paste0("Visi patvirinti atvejai (duomenys ",max.date,")"),
-       subtitle = "Šaltinis ir skaičiavimai: Corona-Stat.lt",
-       x="",
-       y="")
-
-```
-
-
-### Aktyvūs (abs.)
-```{r, echo=FALSE}
-df <- data_lt_county_cum%>%
-  filter(var=="active",
-         date==max(date))%>%
-  left_join(.,demo_r_pjangrp, by="NUTS_ID") %>%
-  mutate(values_pop=values/pop*100000)
-
-
-df <- left_join(EU_shape, df, by="NUTS_ID")
-
-min <- round(min(df$values, na.rm = T),1)
-max <- round(max(df$values, na.rm = T),1)
-
-my_breaks <- c(min,2,5, 12 ,max)
-
-ggplot(df, aes(fill=values))+
-  geom_sf()+
-  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
-                       name="Skaičius",
-                       trans="log",
-                       na.value = "grey100",
-                       breaks=my_breaks,
-                       labels=my_breaks)+
-  geom_sf_label(aes(label =round(values,0)), size=5, fill="white" )+
-  labs(title=paste0("Visi patvirinti atvejai (duomenys ",max.date,")"),
-       subtitle = "Šaltinis ir skaičiavimai: Corona-Stat.lt",
-       x="",
-       y="")
-
-```
-
-
-### Aktyvūs (/pop.)
-```{r, echo=FALSE}
-df <- data_lt_county_cum%>%
-  filter(var=="active",
-         date==max(date))%>%
-  left_join(.,demo_r_pjangrp, by="NUTS_ID") %>%
-  mutate(values_pop=values/pop*100000)
-
-df <- left_join(EU_shape, df, by="NUTS_ID")
-
-min <- round(min(df$values_pop, na.rm = T),1)
-max <- round(max(df$values_pop, na.rm = T),1)
-
-my_breaks <- c(min,1,2 ,max)
-
-ggplot(df, aes(fill=values_pop))+
-  geom_sf()+
-  scale_fill_gradientn(colours=brewer.pal(name ="YlOrRd", n=9),
-                       name="Skaičius",
-                       trans="log",
-                       na.value = "grey100",
-                       breaks=my_breaks,
-                       labels=my_breaks)+
-  geom_sf_label(aes(label =round(values_pop,0)), size=5, fill="white" )+
-  labs(title=paste0("Visi patvirinti atvejai (duomenys ",max.date,")"),
-       subtitle = "Šaltinis ir skaičiavimai: Corona-Stat.lt",
-       x="",
-       y="")
-
-```
-
 ## Lietuva - statistika {.tabset .tabset-fade .tabset-pills}
 ### Bendras atvejų skaičius
 ```{r, echo=FALSE}
@@ -1529,24 +1396,6 @@ ggplot(df, aes(x=date, y=values, fill=var))+
 ```
 
 ## Ištyrimai
-
-Žemiau lentelėje pateikiamas santykis tarp atliktų testų bei stebimų asmenų. Duomenų šaltinis SAM. Deja neturime pilnos informacijos visoms dienoms, neaišku, kiek iš atliktų testų yra atlikti pakartotiniai testai, taip pat abejonių kelia paskutines dienas nedidėjęs stebimų asmenų (kurie potencialiai turėjo kontaktą su koronaviruso nešiotojais) skaičius. Todėl tikėtina, jog ypatingai paskutinių dienų ištyrimų statistika yra klaidinga (per daug optimistinė).
-
-```{r}
-data_lt %>%
-  na.omit()%>%
-  mutate(tested_perc=round(tested_total/observed*100,1))%>%
-  select(date,tested_total, observed, tested_perc)%>%
-  rename(Data=date,
-         "Atlitka testų"=tested_total,
-         "Stebimų asm. skaičius"=observed,
-         "Ištyrimų proc."=tested_perc)%>%
-  kable(escape = F,row.names = FALSE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
-                full_width = F, 
-                position = "center")
-
-```
 
 Lietuvoje testuojamų asmenų skaičius nėra didelis (palyginus su Latvija ar Estija) dėl ypatingai mažo turimų reagentų skaičiaus. Todėl 2020-03-21/22 dienomis netgi buvo [apribotas mėginių ėmimas Kauno ir Klaipėdos mobiliame punkte. 2020-02-21 Lietuvoje buvo apie 1300 reagentų (2020-02-21 atlitki 384 testai).](https://www.15min.lt/naujiena/aktualu/lietuva/likus-700-reagentu-gali-buti-tiriami-ne-visi-eminiai-is-mobiliosios-patikros-punktu-56-1293308). 
 
@@ -1617,12 +1466,7 @@ kable(table_risk_age_group)%>%
 
 ```
 
-
-
-
 ## Medicinos pajėgumai
-
-
 
 
 # Ekonominiai rodikliai
@@ -1733,82 +1577,92 @@ Artimiausiu metu bus pateikta daugiau įžvalgų iš VMI duomenų...
 
 # Prognozės
 ## Sergamumo statistikos prognozės
+Nors internete pasirodo vis daugiau prognozių, kokios pandemijos galima tikėtis Lietuvoje, mes labai abejojame tokių (kaip ir savų) prognozių tiklsumu. Leiskite paaiškinti: prognozės apie sergamumą dažniauriai remiasi SIR (modeliu), kuriam kalibruoti imami jau surinkti šalies duomenys, arba naudojami tarptautiniai parametrai. Abu variantai netinkami prognozuoti koronaviruso pliltimui šalyje. 
 
-Experimentiniai grafikai:
+Pasauliniai parametrai, pvz., apie užkrečiamumą, kuris nusako kaip sparčiai dauginsis virusas, neįtraukia Lietuvoje priimtų priemonių - karantino (prekybos centrų, restoranų ir kitų viešų renginių uždarymo). Taip pat šiuos parametrus keičia ir žmonių elgesys, kiek populaicija imasi labiau save saugoti - plauti rankas, dezinfektuoti paviršius, dėvėti apsaugines kaukes. Šiuos parametrus, priklausomai nuo taikytų priemonių epidemiologai bandys nnustatyti PO pandemijos, siekdami įvertinti kokie veiksmai turėjo kokią įtaką. Šiuo metu, tai padaryti neįmanoma.
+
+Kitas variantas yra kalibruoti modelį naudojant faktinius registruotų sirgimų skaičius. Tai darome ir mes. Tačiau čia iškyla kitos problemos:
+
+* dauguma pradinių atvejų buvo įvežtiniai. Taigi užregistruoti atvejai atspindi ne viruso plitimą šalyje, o įvežtinius atvejus. Būtent dėl šios priežasites laikome, jog [A.Ghorbal prognozė](https://www.delfi.lt/news/daily/lithuania/sukure-koronaviruso-plitimo-lietuvoje-modeli-kada-pasieksime-pika.d?id=83871709), kai remiamasi įvežtinių atvejų duomenimis, yra niekinė.
+
+* dėl labai riboto testavimo (mūsų supratimu, iki šiol testavimas yra per mažos apimties, siekiant suvaldyti pandemiją) "atvejų statistika" visiškai neatspindi realybės. Kol įvežtinių atvejų skaičius nebuvo didelis, sudaryti galimą kontaktą turėjusių asmenų sąrašą ir nedelsiant testuoti visus šiuos asmenis ir asmenis su kuriais jie turėjo kontaktą - buvo galimas, tačiau nepakako reagentų to daryti. Nuo 2020-03-20 SAM nebeskelbia statistikos apie stebimus asmenis, nes tikėtina šis asmenų skaičius yra išaugęs eksponentiškai ir atsekti visų atvejų yra nebeįmanoma. Labai galimas scenarijus, jog šiuo metu Leituvoje yra didelis COVID užsikrėtimų skaičius, tačiau testuojami ir nustatoma vis dar tik dalis, kuri potencialiai turėjo kontaktą, taip iškreipiant imtį. Iš kitos pusės, asmenys užsikrėtę ir turintys simptomus, nebūtinai sulaukia testavimo ir nepakliūna į statistiką.
+
+Ko gero viena geriausių statistikų bus autopsijų rezultatai, kuriuose bus nustatyta ar asmenys mirė dėl koronaviruso ar ne. Pagal mirčių statistiką bus galima pasibaigus pandemijai tikėtina tiklsiausiai atsakyti buvusį pandemijos mastą.
+
+Turint omenyje visuos šiuos ribotumus, žemiau pristatome SIR kalibruoto modelio Lietuvoje prognozes. Modelis rekalbibruojasi kasdien, gavus daugiau duomenų apie užsikrėtimų skaičių
 
 ```{r}
+df <- data_lt_country_cum %>%
+        ungroup()%>%
+        filter(var=="active")%>%
+        select(-var)%>%
+        filter(values>=10,
+               date!=max(date))
 
-df <- data_world %>%
-  filter(var=="confirmed",
-         value>=100)%>%
-  group_by(valstybe)%>%
-  arrange(date)%>%
-  mutate(index = value/value[1],
-         time_0=seq_along(along.with = date))%>%
-  filter(
-    # CNTR_CODE %in% c("CN", "IT", "DE", "KR", "ES", "IR", "JP", "EE"),
-    time_0<=40)
+  ```
 
+Žemiau pateikiame supaprastiną grafiką, kuriame eliminuojame pirmus 10 atvejų. Pirmi 10 pasirinkti arbitriškai.
+Kairysis grafikas iliustruoja faktinius sakčius. Labai gerai matomas augimo eksponentiškumas. Dešinysis grafikas iliustruoja logaritmuotus skaičius, tad matoma, kaip beveik labai "gražiai" logaritmuoti įverčiai sugula ant tiesės. Taigi iš esmės duomenys yra tinkami tolimensiai analizei taikant SIR modelį.
 
-ggplot(df, aes(time_0, value,  group=valstybe))+
-  geom_line()+
-  scale_y_continuous(trans = log2_trans())+
-  scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
-  labs(title="Registruotų atvejų skaičiaus raida nuo momento, kai šalyje pasiekta 100 atvejų",
-       subtitle = "Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt",
-       x="Dienos 0+t",
-       y="Skaičius (log2)")+
-  theme(legend.title=element_blank(),
-        legend.position="left",
-        axis.text.x = element_text(angle = 45, hjust = 1))
-
+```{r}
+par(mfrow = c(1, 2))
+plot(df$date, df$values, xlab="Data", ylab="Skaičius")
+plot(df$date, log10(df$values), xlab="Data", ylab="Skaičius, log10")
+abline(lm(log10(df$values) ~ df$date))
+title("Patvirtinti COVID-19 atvejai Lietuvoje", outer = TRUE, line = -2)
 
 ```
 
 
-Užsikrėtimų pokytis paskelbus karantiną
+Žemiau pateikiami progostinio SIR modelio rezultatai
 
-```{r, echo=FALSE}
-df <- data_world %>%
-  filter(var=="confirmed",
-         CNTR_CODE %in% c("BE","BG","CZ","DK","DE","EE","IE","EL","ES","FR","HR","IT","CY","LV","LT","LU","HU","MT","NL","AT","PL","PT","RO","SI","SK","FI","SE","UK","IS","LI","NO"))%>%
-  spread(date, value)%>%
-  arrange(desc(.[,ncol(.)]))%>%
-  filter(valstybe %in% c(.$valstybe[1:5], "Estija", "Latvija", "Lenkija", "Lietuva"))%>%
-  gather(date, value, 5:ncol(.))%>%
-  mutate(date=as.Date(date)) %>%
-  group_by(valstybe) %>%
-  mutate(diff = value - lag(value, default = first(value))) %>%
-  select (valstybe,date, diff)
+* Dešinysis grafikas iliustuoja tris kreives, kiek asmenų yra sveikų (juoda kreivė), kiek asmenų serga (raudona kreivė) ir kiek asmenų pasveiko arba mirė (žalia kreivė).
+* Dešiniame graikė matyti, jog pikas būtų pasiektas ties 42 diena po to, kai šalyje buvo registruota 10 atvejų, mūsų atveju tai 2020-04-24
+* Dešiniame grafike atkartojamas kairysis grafikas, tik y-skalė yra pritaikyta geriau įskaityti užsikrėtusiųjų statistiką. Burbuliukai pažymi faktinius registruotus susirgimus
+* R0, parametras kuris nusako kiek vienas infektas asmuo užkrečia kitų asmenų šiuo metu siekia 1.89 kas yra ganėtinai žemas rezultatas ir indikacija tam, jog šiuo metu užfiksuojamų asmenų skaičius nėra tiklsus (yra per žemas)
+* Pandemija piką turėtų pasiekti t+42 dienos
+* Pandemijos piko metu, turėtų būti užsikrėtę 373830 asmenų
+* Taikant prielaidą, jog mirs 10 procentų jų reikės plaučių ventiliavimo aparatė, tai reikštų, jog Lietuvai jų gali prireikti iki 38 tūkstančių vientų. Kovo pradžioje SAM ministro teigimu, jų turėjome apie 1300.
 
-# čia reikia sukurti atskirą DF, geriausia google sheete ir importuot, nes reikia visoms šalims
 
-dff <- data.frame(valstybe=c("Airija", "Austrija", "Belgija", "Čekija", "Danija", 
-                             "Estija", "Graikija", "Ispanija", "Islandija", "Italija", "Kipras", "Kroatija", "Latvija", "Lenkija", "Lietuva", "Liuksemburgas", "Nyderlandai", "Norvegija",
-                             "Portugalija", "Prancūzija", "Rumunija", "Slovakija", "Slovėnija", "Suomija", "Vengrija", "Vokietija"),
-                  diena=c("2020-03-13", "2020-03-11","2020-03-18", "2020-03-16","2020-03-13", "2020-03-12","2020-03-16", "2020-03-14","2020-03-16", "2020-03-11","2020-03-11",
-                          "2020-03-13","2020-03-17", "2020-03-11","2020-03-16", "2020-03-13","2020-03-11", "2020-03-12","2020-03-12", "2020-03-16","2020-03-16", "2020-03-16","2020-03-20", "2020-03-16"
-                          ,"2020-03-13", "2020-03-15"))%>%
-  mutate(diena=as.Date(as.character(diena)))
 
-df <- left_join(df,dff)
+```{r}
+Infected <- df$values
+Day <- 1:(length(df$date))
+N <- 2793471 
 
-max.date<-max(df$date)
 
-ggplot(df, aes(x=date, y=diff)) +
-  geom_area(alpha=0.5, color="darkred", fill="red")+
-  scale_x_date()+
-  labs(title=paste0('Covid-19 Užsikrėtimų pokytis TOP 5 ir Baltijos valstybėse įvedus karantiną ',
-                    max.date), 
-       subtitle="Šaltinis: JHCSSE, skaičiavimai: Corona-Stat.lt", 
-       x="Data", 
-       y="Užsikrėtimų skaičius")+
-  facet_wrap(~valstybe, ncol=3, scales='free_y')+
-  geom_vline(data = df, mapping = aes(xintercept = diena), color="blue" , size=1.1)
+SIR <- function(time, state, parameters) {
+        par <- as.list(c(state, parameters))
+        with(par, {
+                dS <- -beta/N * I * S
+                dI <- beta/N * I * S - gamma * I
+                dR <- gamma * I
+                list(c(dS, dI, dR))
+        })
+}
+
+init <- c(S = N-Infected[1], I = Infected[1], R = 0)
+
+RSS <- function(parameters) {
+        names(parameters) <- c("beta", "gamma")
+        out <- ode(y = init, times = Day, func = SIR, parms = parameters)
+        fit <- out[ , 3]
+        sum((Infected - fit)^2)
+}
+
+Opt <- optim(c(0.5, 0.5), RSS, method = "L-BFGS-B", lower = c(0, 0), upper = c(1, 1)) # optimize with some sensible 
+Opt_par <- setNames(Opt$par, c("beta", "gamma"))
+t <- 1:70 # time in days
+fit <- data.frame(ode(y = init, times = t, func = SIR, parms = Opt_par))
+
+
+matplot(fit$time, fit[ , 2:4], type = "l", xlab = "Day", ylab = "Skaičius", lwd = 2, lty = 1, col = 1:3)
+matplot(fit$time, fit[ , 2:4], type = "l", xlab = "Day", ylab = "Skaičius", lwd = 2, lty = 1, col = 1:3, log = "y")
+## Warning in xy.coords(x, y, xlabel, ylabel, log = log): 1 y value <= 0
+## omitted from logarithmic plot
+
+points(Day, Infected)
+legend("bottomright", c("Sveiki", "Užkrėsti", "Pasveikę/mirę"), lty = 1, lwd = 2, col = col, inset = 0.05)
+title("SIR modelis Lietuvai", outer = TRUE, line = -2)
 ```
-
-![https://xkcd.com/2281/](https://imgs.xkcd.com/comics/coronavirus_research.png)
-
-## Ekonominės prognozės
-
-![comic: https://xkcd.com/2280/](https://imgs.xkcd.com/comics/2010_and_2020.png )

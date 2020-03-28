@@ -13,3 +13,4 @@ if(!require("countrycode")) install.packages("countrycode"); library("countrycod
 #if(!require("osmdata")) install.packages("osmdata"); library("osmdata") # for shape import LT county data
 #if(!require("formattable")) install.packages("formattable"); library("formattable") #for work with shapes
 if(!require("readxl")) install.packages("readxl"); library("readxl") #for work with shapes
+if(!require("deSolve")) install.packages("deSolve"); library("deSolve") #folving diffenrential equations
