@@ -1,3 +1,7 @@
+## Lietuva - žemėlapiai {.tabset .tabset-fade .tabset-pills}
+
+Deja SAM neskelbia detalios informacijos apie pacientų gyvenamąją vietą, todėl žemiau patiekti žemėlapiai remiasi mūsų surinkta informacija iš įvairių šaltinių: SAM, žiniasklaidos, ligoninių bei kitų pranešimų. Todėl skaičiuse galima paklaida.
+
 ### Užsikrėtimai (abs.)
 
 ```{r, echo=FALSE}

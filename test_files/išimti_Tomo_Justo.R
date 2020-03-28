@@ -70,3 +70,22 @@ ggplot(df, aes(x=date, y=diff)) +
         facet_wrap(~valstybe, ncol=3, scales='free_y')+
         geom_vline(data = df, mapping = aes(xintercept = diena), color="blue" , size=1.1)
 ```
+
+
+## Lietuva{.tabset .tabset-fade .tabset-pills}
+### BVP
+### Pramonės produkcija
+### Užsienio prekyba
+### Mažmeninė preyba
+### Infliacija
+### Kreditai
+### Užimtumas / nedarbas
+
+## Pagrindinės ES šalys{.tabset .tabset-fade .tabset-pills}
+### BVP
+### Pramonės produkcija
+### Užsienio prekyba
+### Mažmeninė preyba
+### Infliacija
+### Kreditai
+### Užimtumas / nedarbas

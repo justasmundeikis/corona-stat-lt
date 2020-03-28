@@ -122,3 +122,21 @@ ggplot(df, aes(x=date, y=value, fill=var)) +
         facet_wrap(~valstybe, ncol=3, scales='free_y', nrow=2)
 
 ```
+
+
+
+```{r}
+data_lt %>%
+        na.omit()%>%
+        mutate(tested_perc=round(tested_total/observed*100,1))%>%
+        select(date,tested_total, observed, tested_perc)%>%
+        rename(Data=date,
+               "Atlitka testų"=tested_total,
+               "Stebimų asm. skaičius"=observed,
+               "Ištyrimų proc."=tested_perc)%>%
+        kable(escape = F,row.names = FALSE) %>%
+        kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                      full_width = F, 
+                      position = "center")
+
+```
