@@ -1341,10 +1341,6 @@ Naujausiais duomenimis (`r time_now`) Lietuvoje šiuo metu yra:
 * iš jų mirė - `r df$deaths`
 * likęs aktyvių atvejų  skaičius - `r df$active `
 
-## Lietuva - žemėlapiai {.tabset .tabset-fade .tabset-pills}
-
-Deja SAM neskelbia detalios informacijos apie pacientų gyvenamąją vietą, todėl žemiau patiekti žemėlapiai remiasi mūsų surinkta informacija iš įvairių šaltinių: SAM, žiniasklaidos, ligoninių bei kitų pranešimų. Todėl skaičiuse galima paklaida.
-
 ## Lietuva - statistika {.tabset .tabset-fade .tabset-pills}
 ### Bendras atvejų skaičius
 ```{r, echo=FALSE}
@@ -1469,6 +1465,139 @@ kable(table_risk_age_group)%>%
 ## Medicinos pajėgumai
 
 
+# Prognozės
+## Sergamumo statistikos prognozės
+
+Nors internete pasirodo vis daugiau prognozių, kokios pandemijos galima tikėtis Lietuvoje, mes labai abejojame tokių (kaip ir savų) prognozių tiklsumu. Leiskite paaiškinti: prognozės apie sergamumą dažniauriai remiasi SIR (modeliu), kuriam kalibruoti imami jau surinkti šalies duomenys, arba naudojami tarptautiniai parametrai. Abu variantai netinkami prognozuoti koronaviruso pliltimui šalyje. 
+
+Pasauliniai parametrai, pvz., apie užkrečiamumą, kuris nusako kaip sparčiai dauginsis virusas, neįtraukia Lietuvoje priimtų priemonių - karantino (prekybos centrų, restoranų ir kitų viešų renginių uždarymo). Taip pat šiuos parametrus keičia ir žmonių elgesys, kiek populaicija imasi labiau save saugoti - plauti rankas, dezinfektuoti paviršius, dėvėti apsaugines kaukes. Šiuos parametrus, priklausomai nuo taikytų priemonių epidemiologai bandys nnustatyti PO pandemijos, siekdami įvertinti kokie veiksmai turėjo kokią įtaką. Šiuo metu, tai padaryti neįmanoma.
+
+Kitas variantas yra kalibruoti modelį naudojant faktinius registruotų sirgimų skaičius. Tai darome ir mes. Tačiau čia iškyla kitos problemos:
+
+* dauguma pradinių atvejų buvo įvežtiniai. Taigi užregistruoti atvejai atspindi ne viruso plitimą šalyje, o įvežtinius atvejus. Būtent dėl šios priežasites laikome, jog [A.Ghorbal prognozė](https://www.delfi.lt/news/daily/lithuania/sukure-koronaviruso-plitimo-lietuvoje-modeli-kada-pasieksime-pika.d?id=83871709), kai remiamasi įvežtinių atvejų duomenimis, yra niekinė.
+
+* dėl labai riboto testavimo (mūsų supratimu, iki šiol testavimas yra per mažos apimties, siekiant suvaldyti pandemiją) "atvejų statistika" visiškai neatspindi realybės. Kol įvežtinių atvejų skaičius nebuvo didelis, sudaryti galimą kontaktą turėjusių asmenų sąrašą ir nedelsiant testuoti visus šiuos asmenis ir asmenis su kuriais jie turėjo kontaktą - buvo galimas, tačiau nepakako reagentų to daryti. Nuo 2020-03-20 SAM nebeskelbia statistikos apie stebimus asmenis, nes tikėtina šis asmenų skaičius yra išaugęs eksponentiškai ir atsekti visų atvejų yra nebeįmanoma. Labai galimas scenarijus, jog šiuo metu Leituvoje yra didelis COVID užsikrėtimų skaičius, tačiau testuojami ir nustatoma vis dar tik dalis, kuri potencialiai turėjo kontaktą, taip iškreipiant imtį. Iš kitos pusės, asmenys užsikrėtę ir turintys simptomus, nebūtinai sulaukia testavimo ir nepakliūna į statistiką.
+
+Ko gero viena geriausių statistikų bus autopsijų rezultatai, kuriuose bus nustatyta ar asmenys mirė dėl koronaviruso ar ne. Pagal mirčių statistiką bus galima pasibaigus pandemijai tikėtina tiklsiausiai atsakyti buvusį pandemijos mastą.
+
+Turint omenyje visuos šiuos ribotumus, žemiau pristatome SIR kalibruoto modelio Lietuvoje prognozes. Modelis rekalbibruojasi kasdien, gavus daugiau duomenų apie užsikrėtimų skaičių
+
+```{r}
+df <- data_lt_country_cum %>%
+        ungroup()%>%
+        filter(var=="active")%>%
+        select(-var)%>%
+        filter(values>=10,
+               date!=max(date))
+
+```
+
+
+Žemiau pateikiame supaprastiną grafiką, kuriame eliminuojame pirmus 10 atvejų. Pirmi 10 pasirinkti arbitriškai.
+Kairysis grafikas iliustruoja faktinius sakčius. Labai gerai matomas augimo eksponentiškumas. Dešinysis grafikas iliustruoja logaritmuotus skaičius, tad matoma, kaip beveik labai "gražiai" logaritmuoti įverčiai sugula ant tiesės. Taigi iš esmės duomenys yra tinkami tolimensiai analizei taikant SIR modelį.
+
+```{r}
+plot_1 <- 
+ggplot(df, aes(date, values))+
+  geom_point(col="red", size=3)+
+    geom_line()+
+  scale_x_date(breaks="1 day")+ 
+   theme(legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(x="Data",
+       y="Skaičius")
+
+plot_2 <- 
+ggplot(df, aes(date, log2(values)))+
+  geom_point(col="red", size=3)+
+  geom_smooth(method='lm', formula= y~x, se = FALSE)+
+scale_x_date(breaks="1 day")+ 
+  theme(legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(x="Data",
+       y="Skaičius, log2")
+
+grid.arrange(plot_1, plot_2, nrow=1, top="Patvirtinti COVID-19 atvejai Lietuvoje \n Šaltinis ir skaičiavimai: Corona-Stat.lt")
+```
+
+```{r}
+#Infected <- df$values
+Infected <- df$values
+Day <- 1:(length(Infected))
+N <- 2793471 
+
+SIR <- function(time, state, parameters) {
+        par <- as.list(c(state, parameters))
+        with(par, {
+                dS <- -beta/N * I * S
+                dI <- beta/N * I * S - gamma * I
+                dR <- gamma * I
+                list(c(dS, dI, dR))
+        })
+}
+
+init <- c(S = N-Infected[1], I = Infected[1], R = 0)
+
+RSS <- function(parameters) {
+        names(parameters) <- c("beta", "gamma")
+        out <- ode(y = init, times = Day, func = SIR, parms = parameters)
+        fit <- out[ , 3]
+        sum((Infected - fit)^2)
+}
+
+Opt <- optim(c(0.5, 0.5), RSS, method = "L-BFGS-B", lower = c(0, 0), upper = c(10, 10))
+Opt_par <- setNames(Opt$par, c("beta", "gamma"))
+t <- 1:70 # time in days
+fit <- data.frame(ode(y = init, times = t, func = SIR, parms = Opt_par))
+
+fit<- fit %>%
+  mutate(time=seq(min(df$date), by="day", length.out=nrow(fit)))%>%
+  rename(date=time)%>%
+  left_join(., df, by="date")%>%
+  rename(Factual=values)%>%
+  gather(var, values, -date)%>%
+  mutate(var=factor(var, levels = c("S", "I", "R", "Factual")))
+
+```
+
+Žemiau pateikiami progostinio SIR modelio rezultatai
+
+* Dešinysis grafikas iliustuoja tris kreives, kiek asmenų yra sveikų (juoda kreivė), kiek asmenų serga (raudona kreivė) ir kiek asmenų pasveiko arba mirė (žalia kreivė).
+* Dešiniame graikė matyti, jog pikas būtų pasiektas ties 42 diena po to, kai šalyje buvo registruota 10 atvejų, mūsų atveju tai 2020-04-24
+* Dešiniame grafike atkartojamas kairysis grafikas, tik y-skalė yra pritaikyta geriau įskaityti užsikrėtusiųjų statistiką. Burbuliukai pažymi faktinius registruotus susirgimus
+* R0, parametras kuris nusako kiek vienas infektas asmuo užkrečia kitų asmenų šiuo metu siekia 1.89 kas yra ganėtinai žemas rezultatas ir indikacija tam, jog šiuo metu užfiksuojamų asmenų skaičius nėra tiklsus (yra per žemas)
+* Pandemija piką turėtų pasiekti t+42 dienos
+* Pandemijos piko metu, turėtų būti užsikrėtę 373830 asmenų
+* Taikant prielaidą, jog mirs 10 procentų jų reikės plaučių ventiliavimo aparatė, tai reikštų, jog Lietuvai jų gali prireikti iki 38 tūkstančių vientų. Kovo pradžioje SAM ministro teigimu, jų turėjome apie 1300.
+
+```{r}
+plot_1 <- ggplot(fit, aes(x=date))+
+  geom_line(data=subset(fit, var!="Factual"), aes(y=values, col=var))+
+  scale_color_manual(values=c("blue", "red", "green"), name="Atvejas")+
+  scale_x_date(breaks="1 week")+ 
+  scale_y_continuous(breaks=seq(0,3000000, 500000))+
+  theme(legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(x="Data",
+       y="Skaičius")
+
+plot_2 <- ggplot(fit, aes(x=date))+
+  geom_line(data=subset(fit, var!="Factual"), aes(y=values, col=var))+
+  geom_point(data=subset(fit, var=="Factual"), aes(y=values), na.rm = TRUE)+
+  scale_color_manual(values=c("blue", "red", "green"), name="Atvejas")+
+  scale_x_date(breaks="1 week")+ 
+  scale_y_continuous(trans = log2_trans(),
+                     minor_breaks = trans_breaks("log2", function(x) 2^(x/2)),
+    breaks = trans_breaks("log2", function(x) 2^x))+
+  theme(legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(x="Data",
+       y="Skaičius")
+
+grid.arrange(plot_1, plot_2, nrow=1, top="Koronaviruso susirgimo prognozė remiantis SIR modeliu \n Šaltinis ir skaičiavimai: Corona-Stat.lt")
+```
+
+
 # Ekonominiai rodikliai
 Kai tik atsiras statistiniai rodikliai, pradėsije juos pildyti šioje skiltyje. Šiuo metu tiek Lietuvoje, tiek visame pasaulyje ekonomistai, ekonometrikai, analitikai ir kas tik netingi išreiškia koiekybines prognozes. Deja jos visos remiasi išimtinai prielaidomis, o ne faktais. Kiekybiškai įvertinti koronaviruso sukeliamos pasaulinės recesijos šiuo metu dar nėra įmanoma. 
 
@@ -1476,7 +1605,6 @@ Kai tik atsiras statistiniai rodikliai, pradėsije juos pildyti šioje skiltyje.
 Nežinau ar dėl to, jog mes (ir tikiu ne tik mes) palaidome robotukus nuskaityti vmi.lt tinklapyje esančią informaciją, 2020-03-23 VMI paviešino įmonių, kurios mokesčiams sumokėti arba mokestinės paskolos sutarčiai, be palūkanų sudaryti, turės du mėnesius, [sąrašą](https://www.vmi.lt/cms/informacija-verslui-del-covid-19). Saraše - `r nrow(vmi)` įmonės. Pagal šį sudarytą sąrašą galiem vertinti, kokios įmonės (VMI supratimu) susidurs su ekonominiais sunkumais. 
 
 ###
-
 ```{r}
 df <- vmi %>%
   select(`EV sekcija`)%>%
@@ -1502,7 +1630,6 @@ ggplot(df, aes(reorder(`EV sekcija`, Skaičius), Skaičius))+
 ```
 
 ###
-  
 ```{r}
 df <- vmi %>%
   select(`EV skyrius`)%>%
@@ -1528,7 +1655,6 @@ ggplot(df, aes(reorder(`EV skyrius`, Skaičius), Skaičius))+
 ```
 
 ###
-
 ```{r}
 df <- vmi %>%
   select(`JA teisinė forma`)%>%
@@ -1552,117 +1678,3 @@ ggplot(df, aes(reorder(`JA teisinė forma`, Skaičius), Skaičius))+
 ```
 
 Artimiausiu metu bus pateikta daugiau įžvalgų iš VMI duomenų...
-
-
-
-
-## Lietuva{.tabset .tabset-fade .tabset-pills}
-### BVP
-### Pramonės produkcija
-### Užsienio prekyba
-### Mažmeninė preyba
-### Infliacija
-### Kreditai
-### Užimtumas / nedarbas
-
-## Pagrindinės ES šalys{.tabset .tabset-fade .tabset-pills}
-### BVP
-### Pramonės produkcija
-### Užsienio prekyba
-### Mažmeninė preyba
-### Infliacija
-### Kreditai
-### Užimtumas / nedarbas
-
-
-# Prognozės
-## Sergamumo statistikos prognozės
-Nors internete pasirodo vis daugiau prognozių, kokios pandemijos galima tikėtis Lietuvoje, mes labai abejojame tokių (kaip ir savų) prognozių tiklsumu. Leiskite paaiškinti: prognozės apie sergamumą dažniauriai remiasi SIR (modeliu), kuriam kalibruoti imami jau surinkti šalies duomenys, arba naudojami tarptautiniai parametrai. Abu variantai netinkami prognozuoti koronaviruso pliltimui šalyje. 
-
-Pasauliniai parametrai, pvz., apie užkrečiamumą, kuris nusako kaip sparčiai dauginsis virusas, neįtraukia Lietuvoje priimtų priemonių - karantino (prekybos centrų, restoranų ir kitų viešų renginių uždarymo). Taip pat šiuos parametrus keičia ir žmonių elgesys, kiek populaicija imasi labiau save saugoti - plauti rankas, dezinfektuoti paviršius, dėvėti apsaugines kaukes. Šiuos parametrus, priklausomai nuo taikytų priemonių epidemiologai bandys nnustatyti PO pandemijos, siekdami įvertinti kokie veiksmai turėjo kokią įtaką. Šiuo metu, tai padaryti neįmanoma.
-
-Kitas variantas yra kalibruoti modelį naudojant faktinius registruotų sirgimų skaičius. Tai darome ir mes. Tačiau čia iškyla kitos problemos:
-
-* dauguma pradinių atvejų buvo įvežtiniai. Taigi užregistruoti atvejai atspindi ne viruso plitimą šalyje, o įvežtinius atvejus. Būtent dėl šios priežasites laikome, jog [A.Ghorbal prognozė](https://www.delfi.lt/news/daily/lithuania/sukure-koronaviruso-plitimo-lietuvoje-modeli-kada-pasieksime-pika.d?id=83871709), kai remiamasi įvežtinių atvejų duomenimis, yra niekinė.
-
-* dėl labai riboto testavimo (mūsų supratimu, iki šiol testavimas yra per mažos apimties, siekiant suvaldyti pandemiją) "atvejų statistika" visiškai neatspindi realybės. Kol įvežtinių atvejų skaičius nebuvo didelis, sudaryti galimą kontaktą turėjusių asmenų sąrašą ir nedelsiant testuoti visus šiuos asmenis ir asmenis su kuriais jie turėjo kontaktą - buvo galimas, tačiau nepakako reagentų to daryti. Nuo 2020-03-20 SAM nebeskelbia statistikos apie stebimus asmenis, nes tikėtina šis asmenų skaičius yra išaugęs eksponentiškai ir atsekti visų atvejų yra nebeįmanoma. Labai galimas scenarijus, jog šiuo metu Leituvoje yra didelis COVID užsikrėtimų skaičius, tačiau testuojami ir nustatoma vis dar tik dalis, kuri potencialiai turėjo kontaktą, taip iškreipiant imtį. Iš kitos pusės, asmenys užsikrėtę ir turintys simptomus, nebūtinai sulaukia testavimo ir nepakliūna į statistiką.
-
-Ko gero viena geriausių statistikų bus autopsijų rezultatai, kuriuose bus nustatyta ar asmenys mirė dėl koronaviruso ar ne. Pagal mirčių statistiką bus galima pasibaigus pandemijai tikėtina tiklsiausiai atsakyti buvusį pandemijos mastą.
-
-Turint omenyje visuos šiuos ribotumus, žemiau pristatome SIR kalibruoto modelio Lietuvoje prognozes. Modelis rekalbibruojasi kasdien, gavus daugiau duomenų apie užsikrėtimų skaičių
-
-```{r}
-df <- data_lt_country_cum %>%
-        ungroup()%>%
-        filter(var=="active")%>%
-        select(-var)%>%
-        filter(values>=10,
-               date!=max(date))
-
-  ```
-
-Žemiau pateikiame supaprastiną grafiką, kuriame eliminuojame pirmus 10 atvejų. Pirmi 10 pasirinkti arbitriškai.
-Kairysis grafikas iliustruoja faktinius sakčius. Labai gerai matomas augimo eksponentiškumas. Dešinysis grafikas iliustruoja logaritmuotus skaičius, tad matoma, kaip beveik labai "gražiai" logaritmuoti įverčiai sugula ant tiesės. Taigi iš esmės duomenys yra tinkami tolimensiai analizei taikant SIR modelį.
-
-```{r}
-par(mfrow = c(1, 2))
-plot(df$date, df$values, xlab="Data", ylab="Skaičius")
-plot(df$date, log10(df$values), xlab="Data", ylab="Skaičius, log10")
-abline(lm(log10(df$values) ~ df$date))
-title("Patvirtinti COVID-19 atvejai Lietuvoje", outer = TRUE, line = -2)
-
-```
-
-
-Žemiau pateikiami progostinio SIR modelio rezultatai
-
-* Dešinysis grafikas iliustuoja tris kreives, kiek asmenų yra sveikų (juoda kreivė), kiek asmenų serga (raudona kreivė) ir kiek asmenų pasveiko arba mirė (žalia kreivė).
-* Dešiniame graikė matyti, jog pikas būtų pasiektas ties 42 diena po to, kai šalyje buvo registruota 10 atvejų, mūsų atveju tai 2020-04-24
-* Dešiniame grafike atkartojamas kairysis grafikas, tik y-skalė yra pritaikyta geriau įskaityti užsikrėtusiųjų statistiką. Burbuliukai pažymi faktinius registruotus susirgimus
-* R0, parametras kuris nusako kiek vienas infektas asmuo užkrečia kitų asmenų šiuo metu siekia 1.89 kas yra ganėtinai žemas rezultatas ir indikacija tam, jog šiuo metu užfiksuojamų asmenų skaičius nėra tiklsus (yra per žemas)
-* Pandemija piką turėtų pasiekti t+42 dienos
-* Pandemijos piko metu, turėtų būti užsikrėtę 373830 asmenų
-* Taikant prielaidą, jog mirs 10 procentų jų reikės plaučių ventiliavimo aparatė, tai reikštų, jog Lietuvai jų gali prireikti iki 38 tūkstančių vientų. Kovo pradžioje SAM ministro teigimu, jų turėjome apie 1300.
-
-
-
-```{r}
-Infected <- df$values
-Day <- 1:(length(df$date))
-N <- 2793471 
-
-
-SIR <- function(time, state, parameters) {
-        par <- as.list(c(state, parameters))
-        with(par, {
-                dS <- -beta/N * I * S
-                dI <- beta/N * I * S - gamma * I
-                dR <- gamma * I
-                list(c(dS, dI, dR))
-        })
-}
-
-init <- c(S = N-Infected[1], I = Infected[1], R = 0)
-
-RSS <- function(parameters) {
-        names(parameters) <- c("beta", "gamma")
-        out <- ode(y = init, times = Day, func = SIR, parms = parameters)
-        fit <- out[ , 3]
-        sum((Infected - fit)^2)
-}
-
-Opt <- optim(c(0.5, 0.5), RSS, method = "L-BFGS-B", lower = c(0, 0), upper = c(1, 1)) # optimize with some sensible 
-Opt_par <- setNames(Opt$par, c("beta", "gamma"))
-t <- 1:70 # time in days
-fit <- data.frame(ode(y = init, times = t, func = SIR, parms = Opt_par))
-
-
-matplot(fit$time, fit[ , 2:4], type = "l", xlab = "Day", ylab = "Skaičius", lwd = 2, lty = 1, col = 1:3)
-matplot(fit$time, fit[ , 2:4], type = "l", xlab = "Day", ylab = "Skaičius", lwd = 2, lty = 1, col = 1:3, log = "y")
-## Warning in xy.coords(x, y, xlabel, ylabel, log = log): 1 y value <= 0
-## omitted from logarithmic plot
-
-points(Day, Infected)
-legend("bottomright", c("Sveiki", "Užkrėsti", "Pasveikę/mirę"), lty = 1, lwd = 2, col = col, inset = 0.05)
-title("SIR modelis Lietuvai", outer = TRUE, line = -2)
-```
