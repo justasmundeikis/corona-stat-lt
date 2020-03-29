@@ -1545,7 +1545,7 @@ RSS <- function(parameters) {
         sum((Infected - fit)^2)
 }
 
-Opt <- optim(c(0.5, 0.5), RSS, method = "L-BFGS-B", lower = c(0, 0), upper = c(10, 10))
+Opt <- optim(c(0.5, 0.5), RSS, method = "L-BFGS-B", lower = c(0, 0), upper = c(1, 1))
 Opt_par <- setNames(Opt$par, c("beta", "gamma"))
 t <- 1:70 # time in days
 fit <- data.frame(ode(y = init, times = t, func = SIR, parms = Opt_par))
