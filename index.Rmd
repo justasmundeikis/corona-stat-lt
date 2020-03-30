@@ -48,8 +48,7 @@ shape <- readOGR("./shape_files/ne_50m_admin_0_sovereignty.shp",
   mutate(POP_EST=as.numeric(POP_EST))
 
 # source: Eurostat
-EU_shape <- get_eurostat_geospatial(output_class = "sf", resolution = "60", nuts_level = "3")%>%
-  filter(CNTR_CODE=="LT")
+#EU_shape <- get_eurostat_geospatial(output_class = "sf", resolution = "60", nuts_level = "3")%>% filter(CNTR_CODE=="LT")
 ```
 
 
@@ -1326,7 +1325,7 @@ ggplot(df, aes(x=date, y=diff)) +
 ```
 
 
-# Lietuva
+# Lietuva {.tabset .tabset-fade .tabset-pills}
 ```{r}
 df <- data_lt_country_cum %>%
   filter(date==max(date))%>%
@@ -1341,8 +1340,7 @@ Naujausiais duomenimis (`r time_now`) Lietuvoje šiuo metu yra:
 * iš jų mirė - `r df$deaths`
 * likęs aktyvių atvejų  skaičius - `r df$active `
 
-## Lietuva - statistika {.tabset .tabset-fade .tabset-pills}
-### Bendras atvejų skaičius
+## Bendras atvejų skaičius
 ```{r, echo=FALSE}
 
 df <- data_lt_county_cum%>%
@@ -1367,7 +1365,7 @@ ggplot(df, aes(x=date, y=values, fill=var))+
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-
+## Naujų atvejų skaičius
 ```{r, echo=FALSE}
 
 df <- data_lt_country%>%
@@ -1440,7 +1438,55 @@ ggplot(df, aes(date, values, col=geo))+
   facet_wrap(~case, scales = "free_y")
 ```
 
-## Rizikos statistika
+## Atvejai / ištyrimai
+
+```{r}
+lt_1 <- data_lt %>%
+  select(date, tested_total)%>%
+  rename(tested_total_lt=tested_total)
+
+lt_2 <- data_lt_country_cum %>%
+  filter(var=="confirmed")%>%
+  select(date, values)%>%
+  rename(conf_total_lt=values)
+
+lv <- data_lv %>%
+  select(date, conf_total ,tested_total)%>%
+  rename(conf_total_lv=conf_total,
+         tested_total_lv=tested_total)
+
+ee <- data_ee %>%
+  select(date,conf_total, tested_total)%>%
+  rename(conf_total_ee=conf_total,
+         tested_total_ee=tested_total)
+
+df <- merge(lt_1,lt_2) %>% merge(.,lv) %>% merge(.,ee)%>%
+  mutate(
+    Lietuva=conf_total_lt/tested_total_lt*100,
+    Latvija=conf_total_lv/tested_total_lv*100,
+    Estija=conf_total_ee/tested_total_ee*100
+  )%>%
+  select(1,8,9,10)%>%
+  gather(geo, values, 2:4)
+
+ggplot(df, aes(date, values, col=geo))+
+  geom_line(size=1.1)+
+  geom_point(size=2)+
+  scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
+  labs(
+    title="Santykis tarp aptiktų atvejų ir atliktų testų",
+    subtitle="Šaltinis ir skaičiavimai: Corona-Stat.lt",
+    x="Laikotarpis",
+    y="Santykis"
+  )+
+  scale_x_date(breaks = "2 day")+
+  theme(legend.position = "bottom",
+        axis.text=element_text(size=8),
+        axis.text.x=element_text(angle=45, hjust=1))
+
+
+
+```
 
 ### "Leiskime persirgti"?
 
@@ -1468,7 +1514,7 @@ kable(table_risk_age_group)%>%
 # Prognozės
 ## Sergamumo statistikos prognozės
 
-Nors internete pasirodo vis daugiau prognozių, kokios pandemijos galima tikėtis Lietuvoje, mes labai abejojame tokių (kaip ir savų) prognozių tiklsumu. Leiskite paaiškinti: prognozės apie sergamumą dažniauriai remiasi SIR (modeliu), kuriam kalibruoti imami jau surinkti šalies duomenys, arba naudojami tarptautiniai parametrai. Abu variantai netinkami prognozuoti koronaviruso pliltimui šalyje. 
+Nors internete pasirodo vis daugiau prognozių, kokios pandemijos galima tikėtis Lietuvoje, mes labai abejojame tokių (kaip ir savų) prognozių tiklsumu. Leiskite paaiškinti: prognozės apie sergamumą dažniauriai remiasi SIR (modeliu), kuriam kalibruoti imami jau surinkti šalies duomenys, arba naudojami tarptautiniai parametrai. Abu variantai netinkami prognozuoti koronaviruso pliltimui Lietuvoje. 
 
 Pasauliniai parametrai, pvz., apie užkrečiamumą, kuris nusako kaip sparčiai dauginsis virusas, neįtraukia Lietuvoje priimtų priemonių - karantino (prekybos centrų, restoranų ir kitų viešų renginių uždarymo). Taip pat šiuos parametrus keičia ir žmonių elgesys, kiek populaicija imasi labiau save saugoti - plauti rankas, dezinfektuoti paviršius, dėvėti apsaugines kaukes. Šiuos parametrus, priklausomai nuo taikytų priemonių epidemiologai bandys nnustatyti PO pandemijos, siekdami įvertinti kokie veiksmai turėjo kokią įtaką. Šiuo metu, tai padaryti neįmanoma.
 
@@ -1476,29 +1522,29 @@ Kitas variantas yra kalibruoti modelį naudojant faktinius registruotų sirgimų
 
 * dauguma pradinių atvejų buvo įvežtiniai. Taigi užregistruoti atvejai atspindi ne viruso plitimą šalyje, o įvežtinius atvejus. Būtent dėl šios priežasites laikome, jog [A.Ghorbal prognozė](https://www.delfi.lt/news/daily/lithuania/sukure-koronaviruso-plitimo-lietuvoje-modeli-kada-pasieksime-pika.d?id=83871709), kai remiamasi įvežtinių atvejų duomenimis, yra niekinė.
 
-* dėl labai riboto testavimo (mūsų supratimu, iki šiol testavimas yra per mažos apimties, siekiant suvaldyti pandemiją) "atvejų statistika" visiškai neatspindi realybės. Kol įvežtinių atvejų skaičius nebuvo didelis, sudaryti galimą kontaktą turėjusių asmenų sąrašą ir nedelsiant testuoti visus šiuos asmenis ir asmenis su kuriais jie turėjo kontaktą - buvo galimas, tačiau nepakako reagentų to daryti. Nuo 2020-03-20 SAM nebeskelbia statistikos apie stebimus asmenis, nes tikėtina šis asmenų skaičius yra išaugęs eksponentiškai ir atsekti visų atvejų yra nebeįmanoma. Labai galimas scenarijus, jog šiuo metu Leituvoje yra didelis COVID užsikrėtimų skaičius, tačiau testuojami ir nustatoma vis dar tik dalis, kuri potencialiai turėjo kontaktą, taip iškreipiant imtį. Iš kitos pusės, asmenys užsikrėtę ir turintys simptomus, nebūtinai sulaukia testavimo ir nepakliūna į statistiką.
+* dėl labai riboto testavimo (mūsų supratimu, iki šiol testavimas yra per mažos apimties, siekiant suvaldyti pandemiją) "atvejų statistika" visiškai neatspindi realybės. Kol įvežtinių atvejų skaičius nebuvo didelis, sudaryti galimą kontaktą turėjusių asmenų sąrašą ir nedelsiant testuoti visus šiuos asmenis ir asmenis su kuriais jie turėjo kontaktą - buvo galimas, tačiau nepakako reagentų to daryti. Nuo 2020-03-20 SAM nebeskelbia statistikos apie stebimus asmenis, nes tikėtina šis asmenų skaičius yra išaugęs eksponentiškai ir atsekti visų atvejų yra nebeįmanoma. Labai galimas scenarijus, jog šiuo metu Leituvoje yra didelis COVID užsikrėtimų skaičius, tačiau testuojami ir nustatoma vis dar tik dalis, kuri potencialiai turėjo kontaktą, taip iškreipiant imtį. Iš kitos pusės, asmenys užsikrėtę ir turintys simptomus, nebūtinai sulaukia testavimo ir nepakliūna į statistiką. Lygiai taip pat gali būti, jog taikomi epidemiologiniai tyrimai, raginimas karantinuotis suveikė ir mes jau pasiekėmė užsikrėtimų skaičiaus augimo piką.
 
 Ko gero viena geriausių statistikų bus autopsijų rezultatai, kuriuose bus nustatyta ar asmenys mirė dėl koronaviruso ar ne. Pagal mirčių statistiką bus galima pasibaigus pandemijai tikėtina tiklsiausiai atsakyti buvusį pandemijos mastą.
 
-Turint omenyje visuos šiuos ribotumus, žemiau pristatome SIR kalibruoto modelio Lietuvoje prognozes. Modelis rekalbibruojasi kasdien, gavus daugiau duomenų apie užsikrėtimų skaičių
+Turint omenyje visuos šiuos ribotumus, žemiau pristatome SIR kalibruoto modelio Lietuvoje prognozes. Modelis rekalbibruojasi kasdien, gavus daugiau duomenų apie užsikrėtimų skaičių. Nepaisnt to, griežtai rekomenduojama **nežiūrėti į šį modelį kaip realią prognozę, o tik aip į galimą scenarijų**.
 
 ```{r}
 df <- data_lt_country_cum %>%
         ungroup()%>%
-        filter(var=="active")%>%
-        select(-var)%>%
-        filter(values>=10,
+        filter(var %in% c("active", "recovered"))%>%
+        spread(var, values)%>%
+        filter(.$active>=10,
                date!=max(date))
 
 ```
 
 
 Žemiau pateikiame supaprastiną grafiką, kuriame eliminuojame pirmus 10 atvejų. Pirmi 10 pasirinkti arbitriškai.
-Kairysis grafikas iliustruoja faktinius sakčius. Labai gerai matomas augimo eksponentiškumas. Dešinysis grafikas iliustruoja logaritmuotus skaičius, tad matoma, kaip beveik labai "gražiai" logaritmuoti įverčiai sugula ant tiesės. Taigi iš esmės duomenys yra tinkami tolimensiai analizei taikant SIR modelį.
+Kairysis grafikas iliustruoja faktinius sakčius. Labai gerai matomas augimo eksponentiškumas. Dešinysis grafikas iliustruoja logaritmuotus skaičius, tad matoma, kaip beveik labai "gražiai" logaritmuoti įverčiai sugula ant tiesės. Tiesa laikotarpio pabaigoje pradedamas apstebėti nukrypimas, kuris gali suponuoti, jog koronaviruso užsikrėtimų skaičiaus nebeauga taip sparčiai ir yra pasiektas "pikas".
 
 ```{r}
 plot_1 <- 
-ggplot(df, aes(date, values))+
+ggplot(df, aes(date, active))+
   geom_point(col="red", size=3)+
     geom_line()+
   scale_x_date(breaks="1 day")+ 
@@ -1508,7 +1554,7 @@ ggplot(df, aes(date, values))+
        y="Skaičius")
 
 plot_2 <- 
-ggplot(df, aes(date, log2(values)))+
+ggplot(df, aes(date, log2(active)))+
   geom_point(col="red", size=3)+
   geom_smooth(method='lm', formula= y~x, se = FALSE)+
 scale_x_date(breaks="1 day")+ 
@@ -1522,7 +1568,7 @@ grid.arrange(plot_1, plot_2, nrow=1, top="Patvirtinti COVID-19 atvejai Lietuvoje
 
 ```{r}
 #Infected <- df$values
-Infected <- df$values
+Infected <- df$active
 Day <- 1:(length(Infected))
 N <- 2793471 
 
@@ -1554,9 +1600,10 @@ fit<- fit %>%
   mutate(time=seq(min(df$date), by="day", length.out=nrow(fit)))%>%
   rename(date=time)%>%
   left_join(., df, by="date")%>%
-  rename(Factual=values)%>%
+  rename(Factual=active,
+         Recovered=recovered)%>%
   gather(var, values, -date)%>%
-  mutate(var=factor(var, levels = c("S", "I", "R", "Factual")))
+  mutate(var=factor(var, levels = c("S", "I", "R", "Factual", "Recovered")))
 
 ```
 
@@ -1572,7 +1619,7 @@ fit<- fit %>%
 
 ```{r}
 plot_1 <- ggplot(fit, aes(x=date))+
-  geom_line(data=subset(fit, var!="Factual"), aes(y=values, col=var))+
+  geom_line(data=subset(fit, !(var %in% c("Factual", "Recovered"))), aes(y=values, col=var))+
   scale_color_manual(values=c("blue", "red", "green"), name="Atvejas")+
   scale_x_date(breaks="1 week")+ 
   scale_y_continuous(breaks=seq(0,3000000, 500000))+
@@ -1582,8 +1629,9 @@ plot_1 <- ggplot(fit, aes(x=date))+
        y="Skaičius")
 
 plot_2 <- ggplot(fit, aes(x=date))+
-  geom_line(data=subset(fit, var!="Factual"), aes(y=values, col=var))+
-  geom_point(data=subset(fit, var=="Factual"), aes(y=values), na.rm = TRUE)+
+  geom_line(data=subset(fit, !(var %in% c("Factual", "Recovered"))), aes(y=values, col=var))+
+  geom_point(data=subset(fit, var=="Factual"), aes(y=values), na.rm = TRUE, col="red", shape=4)+
+  geom_point(data=subset(fit, var=="Recovered"), aes(y=values), na.rm = TRUE, col="green", shape=3)+
   scale_color_manual(values=c("blue", "red", "green"), name="Atvejas")+
   scale_x_date(breaks="1 week")+ 
   scale_y_continuous(trans = log2_trans(),
