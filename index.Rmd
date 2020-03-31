@@ -1508,9 +1508,6 @@ kable(table_risk_age_group)%>%
 
 ```
 
-## Medicinos pajėgumai
-
-
 # Prognozės
 ## Sergamumo statistikos prognozės
 
@@ -1724,5 +1721,3 @@ ggplot(df, aes(reorder(`JA teisinė forma`, Skaičius), Skaičius))+
         axis.text.x=element_text(angle=45, hjust=1))
 
 ```
-
-Artimiausiu metu bus pateikta daugiau įžvalgų iš VMI duomenų...
