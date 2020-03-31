@@ -1397,7 +1397,7 @@ Lietuvoje testuojamų asmenų skaičius nėra didelis (palyginus su Latvija ar E
 pop <- demo_r_pjangrp%>%
   filter(NUTS_ID %in% c("LT", "LV", "EE"))%>%
   select(NUTS_ID, pop)%>%
-  data.frame()
+  spread(NUTS_ID,pop)
 
 lt <- data_lt %>%
   select(date, tested_total)%>%
@@ -1413,9 +1413,9 @@ ee <- data_ee %>%
 
 df <- merge(lt,lv)%>% merge(.,ee) %>%
   mutate(
-    tested_total_lt_p=tested_total_lt/pop[3,2]*1000,
-    tested_total_lv_p=tested_total_lv/pop[2,2]*1000,
-    tested_total_ee_p=tested_total_ee/pop[1,2]*1000
+    tested_total_lt_p=tested_total_lt/pop$LT*1000,
+    tested_total_lv_p=tested_total_lv/pop$LV*1000,
+    tested_total_ee_p=tested_total_ee/pop$EE*1000
   )%>%
   gather(var, values, 2:7)%>%
   mutate(case=rep(c("Skaičius", "Skaičius tenkantis 1000 gyventojų"), each=nrow(.)/2),
