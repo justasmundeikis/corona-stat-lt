@@ -1,3 +1,5 @@
+# Request your API security token at https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_authentication_and_authorisation
+# securityToken <- <YOUR_TOKEN>
 install.packages("remotes")
 remotes::install_github("krose/entsoeAPI")
 library(entsoeapi)
