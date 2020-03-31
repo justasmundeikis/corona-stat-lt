@@ -1438,7 +1438,7 @@ ggplot(df, aes(date, values, col=geo))+
   facet_wrap(~case, scales = "free_y")
 ```
 
-## Atvejai / ištyrimai
+## Atvejai / ištyrimai (cum)
 
 ```{r}
 lt_1 <- data_lt %>%
@@ -1472,6 +1472,58 @@ df <- merge(lt_1,lt_2) %>% merge(.,lv) %>% merge(.,ee)%>%
 ggplot(df, aes(date, values, col=geo))+
   geom_line(size=1.1)+
   geom_point(size=2)+
+  scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
+  labs(
+    title="Santykis tarp aptiktų atvejų ir atliktų testų (kumuliatyvūs)",
+    subtitle="Šaltinis ir skaičiavimai: Corona-Stat.lt",
+    x="Laikotarpis",
+    y="Santykis"
+  )+
+  scale_x_date(breaks = "2 day")+
+  theme(legend.position = "bottom",
+        axis.text=element_text(size=8),
+        axis.text.x=element_text(angle=45, hjust=1))
+
+
+
+```
+
+
+## Atvejai / ištyrimai
+
+```{r}
+lt_1 <- data_lt %>%
+  select(date, tested_new)%>%
+  rename(tested_new_lt=tested_new)
+
+lt_2 <- data_lt_country %>%
+  filter(var=="confirmed")%>%
+  select(date, values)%>%
+  rename(conf_new_lt=values)
+
+lv <- data_lv %>%
+  select(date, conf_new ,tested_new)%>%
+  rename(conf_new_lv=conf_new,
+         tested_new_lv=tested_new)
+
+ee <- data_ee %>%
+  select(date,conf_new, tested_new)%>%
+  rename(conf_new_ee=conf_new,
+         tested_new_ee=tested_new)
+
+df <- merge(lt_1,lt_2) %>% merge(.,lv) %>% merge(.,ee)%>%
+  mutate(
+    Lietuva=conf_new_lt/tested_new_lt*100,
+    Latvija=conf_new_lv/tested_new_lv*100,
+    Estija=conf_new_ee/tested_new_ee*100
+  )%>%
+  select(1,8,9,10)%>%
+  gather(geo, values, 2:4)
+
+ggplot(df, aes(date, values, col=geo))+
+  geom_line(size=1.1)+
+  geom_point(size=2)+
+  scale_y_continuous(breaks = seq(0,30,2))+
   scale_color_brewer(palette="Set1",type = "qualitative", name="Valstybės")+
   labs(
     title="Santykis tarp aptiktų atvejų ir atliktų testų",
