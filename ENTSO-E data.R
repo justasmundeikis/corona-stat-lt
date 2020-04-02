@@ -1,57 +1,91 @@
-# https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_authentication_and_authorisation
-# https://github.com/krose/entsoeR/
-
-
+# Request your API security token at https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_authentication_and_authorisation
+# securityToken <- <YOUR_TOKEN>
 install.packages("remotes")
-remotes::install_github("krose/entsoeR")
-library(entsoeR)
+remotes::install_github("krose/entsoeAPI")
+library(entsoeapi)
+library(tidyverse)
 
-ENTSOE_PAT = "<SECURITY_TOKEN>"
-
-data <- entsoeR::entsoe_all_params()
-
-entsoeR::load_get(documentType = "A65", 
-                  processType = "A16", 
-                  periodStart = "201702012300", 
-                  periodEnd = "201702172300", 
-                  outBiddingZone_Domain = "10YCZ-CEPS-----N")
-?load_get
-
-entsoeR::entsoe_all_params()
-
-
-total_load_2019 <- read.csv("data/Total Load - Day Ahead _ Actual_201901010000-202001010000.csv")
-total_load_2020 <- read.csv("data/Total Load - Day Ahead _ Actual_202001010000-202101010000.csv")
-
-plot(total_load_2019$Actual.Total.Load..MW....BZN.LT)
-plot(total_load_2019$Day.ahead.Total.Load.Forecast..MW....BZN.LT)
-plot.ts(total_load_2019$Actual.Total.Load..MW....BZN.LT)
-plot.ts(total_load_2019$Day.ahead.Total.Load.Forecast..MW....BZN.LT)
-
-ts.plot(total_load_2020$Actual.Total.Load..MW....BZN.LT[24])
-
-library(forecast)
-
-load <- msts(total_load_2020$Actual.Total.Load..MW....BZN.LT, start = c(2020,1), seasonal.periods = c(8760, 52))
-fit <- tbats(load)
-plot(forecast(fit))
-plot(load)
-
-?tbats
-?ts
-?msts
+en_eic <- entsoeapi::en_eic() # codes
+# Lithuania average weekly load
+en_load_actual_total_load(eic = "10YLT-1001A0008Q", period_start = lubridate::ymd(as.character(Sys.Date() - 30), tz = "UTC"),
+                          period_end = lubridate::ymd_hm(paste0(Sys.Date() - 1," 23:00"), tz = "UTC"), security_token = securityToken) %>%
+        mutate(dt = lubridate::floor_date(dt, "hours")) %>%
+        group_by(dt) %>%
+        summarise(quantity = mean(quantity)) %>%
+        ungroup() %>%
+        mutate(dt = lubridate::floor_date(dt, "days")) %>%
+        group_by(dt) %>%
+        summarise(quantity = mean(quantity)) %>%
+        ungroup() %>%
+        mutate(wday = lubridate::wday(dt, week_start = 1), isoweek = as.factor(lubridate::isoweek(dt))) %>%
+        ggplot(., aes(wday, quantity, col = isoweek)) + geom_line()
 
 
-ts.plot(load[1:168])
-ts.plot(load[168:336])
-ts.plot(load[336:504])
-ts.plot(load[504:672])
-ts.plot(load[672:840])
-ts.plot(load[840:1008])
-ts.plot(load[1008:1176])
-ts.plot(load[1176:1344])
-ts.plot(load[1344:1512])
-ts.plot(load[1512:1680])
-ts.plot(load[1680:1848])
-ts.plot(load[1848:2016])
+en_load_actual_total_load(eic = "10YLT-1001A0008Q", period_start = lubridate::ymd(as.character(Sys.Date() - 30), tz = "UTC"),
+                          period_end = lubridate::ymd_hm(paste0(Sys.Date() - 1," 23:00"), tz = "UTC"), security_token = securityToken) %>%
+        mutate(dt = lubridate::floor_date(dt, "hours")) %>%
+        group_by(dt) %>%
+        summarise(quantity = mean(quantity)) %>%
+        ungroup() %>%
+        mutate(dt = lubridate::floor_date(dt, "days")) %>%
+        group_by(dt) %>%
+        summarise(quantity = mean(quantity)) %>%
+        ungroup() %>%
+        mutate(wday = lubridate::wday(dt, week_start = 1), isoweek = as.factor(lubridate::isoweek(dt))) %>%
+        ggplot(., aes(wday, quantity, col = isoweek)) +
+        geom_line() + xlab("savaitės diena") + ylab("Kiekis, MW") +
+        ggtitle("Elektros tinklų apkrova Lietuvoje, pask. 30 dienų savaitiniai duomenys (vidurkiai), MW", subtitle = "Duomenys: transparency.entsoe.eu, skaičiavimai: corona-stat.lt")
+
+en_load_actual_total_load(eic = "10YLT-1001A0008Q", period_start = lubridate::ymd(as.character(Sys.Date() - 30), tz = "UTC"),
+                          period_end = lubridate::ymd_hm(paste0(Sys.Date() - 1," 23:00"), tz = "UTC"), security_token = securityToken) %>%
+        mutate(dt = lubridate::floor_date(dt, "hours")) %>%
+        group_by(dt) %>%
+        summarise(quantity = mean(quantity)) %>%
+        ungroup() %>%
+        mutate(dt = lubridate::floor_date(dt, "days")) %>%
+        group_by(dt) %>%
+        summarise(quantity = mean(quantity)) %>%
+        ungroup() %>%
+        mutate(wday = lubridate::wday(dt, week_start = 1), isoweek = as.factor(lubridate::isoweek(dt))) %>%
+        ggplot(., aes(wday, quantity, col = isoweek)) +
+        geom_bar() + xlab("savaitės diena") + ylab("Kiekis, MW") +
+        ggtitle("Elektros tinklų apkrova Lietuvoje, pask. 30 dienų savaitiniai duomenys (vidurkiai), MW", subtitle = "Duomenys: transparency.entsoe.eu, skaičiavimai: corona-stat.lt")
+
+
+ts <- en_load_actual_total_load(eic = "10YLT-1001A0008Q", period_start = lubridate::ymd(as.character(Sys.Date() - 22), tz = "UTC"),
+                          period_end = lubridate::ymd_hm(paste0(Sys.Date() - 15," 23:00"), tz = "UTC"), security_token = securityToken)
+
+plot.ts(ts$quantity)
+
+
+en_load_actual_total_load(eic = "10YLT-1001A0008Q", period_start = lubridate::ymd(as.character(Sys.Date() - 30), tz = "UTC"),
+                          period_end = lubridate::ymd_hm(paste0(Sys.Date() - 1," 23:00"), tz = "UTC"), security_token = securityToken) %>%
+        mutate(dt = lubridate::floor_date(dt, "hours")) %>%
+        group_by(dt) %>%
+        summarise(quantity = mean(quantity)) %>%
+        ungroup() %>%
+        mutate(dt = lubridate::floor_date(dt, "days")) %>%
+        group_by(dt) %>%
+        summarise(quantity = mean(quantity)) %>%
+        ungroup() %>%
+        mutate(wday = lubridate::wday(dt, week_start = 1), isoweek = as.factor(lubridate::isoweek(dt))) %>%
+        ggplot(., aes(wday, quantity, col = isoweek)) +
+        geom_bar() + xlab("savaitės diena") + ylab("Kiekis, MW") +
+        ggtitle("Elektros tinklų apkrova Lietuvoje, pask. 30 dienų savaitiniai duomenys (vidurkiai), MW", subtitle = "Duomenys: transparency.entsoe.eu, skaičiavimai: corona-stat.lt")
+
+en_load_day_ahead_total_load_forecast(eic = "10YLT-1001A0008Q", period_start = lubridate::ymd(as.character(Sys.Date() - 30), tz = "UTC"),
+                                                 period_end = lubridate::ymd_hm(paste0(Sys.Date() - 1," 23:00"), tz = "UTC"), security_token = securityToken) %>%
+                mutate(dt = lubridate::floor_date(dt, "hours")) %>%
+                group_by(dt) %>%
+                summarise(quantity = mean(quantity)) %>%
+                ungroup() %>%
+                mutate(dt = lubridate::floor_date(dt, "days")) %>%
+                group_by(dt) %>%
+                summarise(quantity = mean(quantity)) %>%
+                ungroup() %>%
+                mutate(wday = lubridate::wday(dt, week_start = 1), isoweek = as.factor(lubridate::isoweek(dt))) %>%
+                ggplot(., aes(wday, quantity, col = isoweek)) +
+                geom_line() + xlab("savaitės diena") + ylab("Kiekis, MW") +
+                ggtitle("Elektros tinklų apkrovos prognozė, MW", subtitle = "Duomenys: transparency.entsoe.eu, skaičiavimai: corona-stat.lt")
+
 
