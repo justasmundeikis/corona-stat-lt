@@ -32,7 +32,7 @@ source("./scripts/loading_R_packets.R")
 dir.create("./data/")
 source("./scripts/data_import_preparation_world.R")
 source("./scripts/data_import_GS.R")
-# source("./scripts/vmi.R")
+#source("./scripts/vmi.R")
 ```
 
 ```{r, include=FALSE}
@@ -1278,8 +1278,7 @@ df <- data_world %>%
   spread(var,value)%>%
   mutate(deathrate=deaths/confirmed*100)%>%
   mutate_at(vars(deathrate),funs(round(.,2)))%>%
-  arrange(deaths)%>%
-  top_n(.,20, confirmed)
+  arrange(deaths)
 
 ggplot(df,aes(x=reorder(valstybe,-deathrate), y=deathrate, fill=valstybe))+
   geom_bar(stat='identity',
@@ -1579,10 +1578,10 @@ Turint omenyje visuos šiuos ribotumus, žemiau pristatome SIR kalibruoto modeli
 
 ```{r}
 df <- data_lt_country_cum %>%
-        ungroup()%>%
-        filter(var %in% c("active", "recovered"))%>%
-        spread(var, values)%>%
-        filter(.$active>=10,
+  spread(var,values)%>%
+  mutate(removed=recovered+deaths)%>%
+  select(date, active, removed)%>%
+          filter(.$active>1,
                date!=max(date))
 
 ```
@@ -1616,7 +1615,6 @@ grid.arrange(plot_1, plot_2, nrow=1, top="Patvirtinti COVID-19 atvejai Lietuvoje
 ```
 
 ```{r}
-#Infected <- df$values
 Infected <- df$active
 Day <- 1:(length(Infected))
 N <- 2793471 
@@ -1641,8 +1639,9 @@ RSS <- function(parameters) {
 }
 
 Opt <- optim(c(0.5, 0.5), RSS, method = "L-BFGS-B", lower = c(0, 0), upper = c(1, 1))
+
 Opt_par <- setNames(Opt$par, c("beta", "gamma"))
-t <- 1:70 # time in days
+t <- 1:100 # time in days
 fit <- data.frame(ode(y = init, times = t, func = SIR, parms = Opt_par))
 
 fit<- fit %>%
@@ -1650,9 +1649,11 @@ fit<- fit %>%
   rename(date=time)%>%
   left_join(., df, by="date")%>%
   rename(Factual=active,
-         Recovered=recovered)%>%
+         Removed=removed)
+
+%>%
   gather(var, values, -date)%>%
-  mutate(var=factor(var, levels = c("S", "I", "R", "Factual", "Recovered")))
+  mutate(var=factor(var, levels = c("S", "I", "R", "Factual", "Removed")))
 
 ```
 
@@ -1668,7 +1669,7 @@ fit<- fit %>%
 
 ```{r}
 plot_1 <- ggplot(fit, aes(x=date))+
-  geom_line(data=subset(fit, !(var %in% c("Factual", "Recovered"))), aes(y=values, col=var))+
+  geom_line(data=subset(fit, !(var %in% c("Factual", "Removed"))), aes(y=values, col=var))+
   scale_color_manual(values=c("blue", "red", "green"), name="Atvejas")+
   scale_x_date(breaks="1 week")+ 
   scale_y_continuous(breaks=seq(0,3000000, 500000))+
@@ -1678,9 +1679,9 @@ plot_1 <- ggplot(fit, aes(x=date))+
        y="Skaičius")
 
 plot_2 <- ggplot(fit, aes(x=date))+
-  geom_line(data=subset(fit, !(var %in% c("Factual", "Recovered"))), aes(y=values, col=var))+
+  geom_line(data=subset(fit, !(var %in% c("Factual", "Removed"))), aes(y=values, col=var))+
   geom_point(data=subset(fit, var=="Factual"), aes(y=values), na.rm = TRUE, col="red", shape=4)+
-  geom_point(data=subset(fit, var=="Recovered"), aes(y=values), na.rm = TRUE, col="green", shape=3)+
+  geom_point(data=subset(fit, var=="Removed"), aes(y=values), na.rm = TRUE, col="green", shape=3)+
   scale_color_manual(values=c("blue", "red", "green"), name="Atvejas")+
   scale_x_date(breaks="1 week")+ 
   scale_y_continuous(trans = log2_trans(),
