@@ -9,7 +9,7 @@ data=$(date +"%m-%d-%Y %H:%M");
 echo "started $(date)">> /home/pi/list_log.txt;
 echo $(pwd) >>/home/pi/list_log.txt;
 
-git pull;
+git pull -f;
 Rscript -e "rmarkdown::render('index.Rmd')";
 git add .;
 git commit -m "automatic update $data";
